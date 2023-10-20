@@ -47,12 +47,33 @@ public class LocationService {
 
         //GetForObject는 헤더를 정의할 수 없음
         ResponseEntity<Map> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, Map.class);
-//        getStationNames(result);
+        getStationNames(result);
     }
 
     /**
      * ResponseEntity 중 역이름만 꺼내서 List에 담기
      * */
+    public void getStationNames(ResponseEntity<Map> responseEntity){
+        Map<String, Object> responseBody = responseEntity.getBody();
 
+        // "documents" 키의 값을 가져와 List<Map> 형태로 캐스팅
+        List<Map<String, Object>> documents = (List<Map<String, Object>>) responseBody.get("documents");
+
+        // "place_name" 값을 추출하여 List<String>에 담기
+        List<String> placeNames = new ArrayList<>();
+        for (Map<String, Object> document : documents) {
+            String placeName = (String) document.get("place_name");
+            String[] words = placeName.split(" "); //호선은 제외한 역이름만 사용
+            if (words.length > 0) {
+                placeNames.add(words[0]);
+            }
+        }
+
+        // 결과 출력
+        for (String placeName : placeNames) {
+            System.out.println(placeName);
+        }
+
+    }
 
 }

@@ -1,9 +1,6 @@
 package YeoksamStationExit1.locationRecommend.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,6 +71,30 @@ public class LocationService {
             System.out.println(placeName);
         }
 
+    }
+
+    /**
+     * 사용자의 위치에 따른 무게중심 좌표를 구하는 메서드
+     * int 로 받아야 함
+     * */
+    public void findCenterCoordinates(List<FindCenterCoordinatesReqDto> req){
+        List<FindCenterCoordinatesReqDto> positions = req;
+        List<Double> longitude = new ArrayList<>();
+        List<Double> latitude = new ArrayList<>();
+        double sumOfLong = 0;
+        double sumOfLat = 0;
+        for(int i=0; i< positions.size(); i++){
+            longitude.add(positions.get(i).getLongitude());
+            latitude.add(positions.get(i).getLatitude());
+        }
+        for (double dd : longitude) {
+            sumOfLong += dd;
+        }
+        for (double dd : latitude) {
+            sumOfLat += dd;
+        }
+        System.out.println("longg : " + Math.round(sumOfLong/3*100000.0)/100000.0);
+        System.out.println("sumOfLat : " + Math.round(sumOfLat/3*100000.0)/100000.0);
     }
 
 }

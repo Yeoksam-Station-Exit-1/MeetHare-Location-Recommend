@@ -29,7 +29,6 @@ public class LocationController {
 
     @GetMapping("/findCenterCoordinates")
     public ResponseEntity<?> findCenterCoordinates(@RequestBody List<FindCenterCoordinatesReqDto> req) throws Exception {
-        System.out.println("cdd");
         locationService.findCenterCoordinates(req);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -21,13 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class LocationController {
 
     private final LocationService locationService;
-    @GetMapping("/middlespot")
+//    @GetMapping("/middlespot")
     public ResponseEntity<?> findMiddleSpot() throws Exception {
-        locationService.findNearbyAreas();
+//        locationService.findNearbyAreas();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/findCenterCoordinates")
+//    @GetMapping("/findCenterCoordinates")
+    @GetMapping("/middlespot")
     public ResponseEntity<?> findCenterCoordinates(@RequestBody List<FindCenterCoordinatesReqDto> req) throws Exception {
         locationService.findCenterCoordinates(req);
         return new ResponseEntity<>(HttpStatus.OK);

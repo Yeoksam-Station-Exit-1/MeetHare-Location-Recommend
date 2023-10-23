@@ -81,8 +81,9 @@ public class LocationService {
         List<FindCenterCoordinatesReqDto> positions = req;
         List<Double> longitude = new ArrayList<>();
         List<Double> latitude = new ArrayList<>();
-        double sumOfLong = 0;
-        double sumOfLat = 0;
+        double cnt = req.size(); //사용자 수
+        double sumOfLong = 0; //경도
+        double sumOfLat = 0; //위도
         for(int i=0; i< positions.size(); i++){
             longitude.add(positions.get(i).getLongitude());
             latitude.add(positions.get(i).getLatitude());
@@ -93,8 +94,8 @@ public class LocationService {
         for (double dd : latitude) {
             sumOfLat += dd;
         }
-        System.out.println("longg : " + Math.round(sumOfLong/3*100000.0)/100000.0);
-        System.out.println("sumOfLat : " + Math.round(sumOfLat/3*100000.0)/100000.0);
+        System.out.println("longg : " + Math.round((sumOfLong/cnt)*100000.0)/100000.0);
+        System.out.println("sumOfLat : " + Math.round((sumOfLat/cnt)*100000.0)/100000.0);
     }
 
 }

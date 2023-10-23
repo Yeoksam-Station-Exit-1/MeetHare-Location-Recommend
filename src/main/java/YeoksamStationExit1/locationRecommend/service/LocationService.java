@@ -14,9 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -59,14 +57,14 @@ public class LocationService {
      * api 를 사용하여 받아온 data 중 필요한 데이터만을 가져옴
      * ResponseEntity 중 역이름만 꺼내서 List에 담기
      * */
-    public List<String> getStationNames(ResponseEntity<Map> responseEntity){
+    public Set<String> getStationNames(ResponseEntity<Map> responseEntity){
         Map<String, Object> responseBody = responseEntity.getBody();
 
         // "documents" 키의 값을 가져와 List<Map> 형태로 캐스팅
         List<Map<String, Object>> documents = (List<Map<String, Object>>) responseBody.get("documents");
 
         // "place_name" 값을 추출하여 List<String>에 담기
-        List<String> placeNames = new ArrayList<>(); //역이름만 담은 리스트
+        Set<String> placeNames = new HashSet<>(); //역이름만 담은 리스트
         for (Map<String, Object> document : documents) {
             String placeName = (String) document.get("place_name");
             String[] words = placeName.split(" "); //호선은 제외한 역이름만 사용

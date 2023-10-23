@@ -1,6 +1,8 @@
 package YeoksamStationExit1.locationRecommend.controller;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.entity.StationInfra;
+import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
 import YeoksamStationExit1.locationRecommend.service.LocationService;
 
 import java.util.HashSet;
@@ -24,13 +26,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LocationController {
 
+    private final LocationRepository locationRepository;
+
     private final LocationService locationService;
 
     @GetMapping("/middlespot")
     public ResponseEntity<?> findCenterCoordinates(@RequestBody List<FindCenterCoordinatesReqDto> req) throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
+
+        StationInfra recommendPlace = locationService.findPlaceByInfracount(placeNames);
+
+        locationService.searchPubTransPath(req, recommendPlace);
+
+        System.out.println(recommendPlace.getStationName());
+
         //TODO : 우선순위 구하기
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
 }

@@ -2,7 +2,11 @@ package YeoksamStationExit1.locationRecommend.controller;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 import YeoksamStationExit1.locationRecommend.service.LocationService;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,15 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LocationController {
 
     private final LocationService locationService;
-    @GetMapping("/middlespot")
-    public ResponseEntity<?> findMiddleSpot() throws Exception {
-        locationService.findNearbyAreas();
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
-    @GetMapping("/findCenterCoordinates")
+    @GetMapping("/middlespot")
     public ResponseEntity<?> findCenterCoordinates(@RequestBody List<FindCenterCoordinatesReqDto> req) throws Exception {
-        locationService.findCenterCoordinates(req);
+        Set<String> placeNames = locationService.findCenterCoordinates(req);
+        //TODO : 우선순위 구하기
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -3,4 +3,4 @@ spring:
     active: secret
 
 kakao:
-  key: ${restApiKey}
+  key: ${kakaokey}

@@ -1,31 +1,33 @@
 package YeoksamStationExit1.locationRecommend.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+// import javax.persistence.*;
 
-@Entity
+// @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "station_infra")
-public class StationInfra{
+@AllArgsConstructor
+// @Table(name = "station_infra")
+public class StationInfra {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "station_id")
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @Column(name = "station_id")
     private Integer stationId;
 
-    @Column(name = "station_name")
+    // @Column(name = "station_name")
     private String stationName;
 
-    @Column(name = "longitude")
+    // @Column(name = "longitude")
     private double longitude;
 
-    @Column(name = "latitude")
+    // @Column(name = "latitude")
     private double latitude;
 
-    @Column(name = "infra_count")
+    // @Column(name = "infra_count")
     private Integer infraCount;
 
 }

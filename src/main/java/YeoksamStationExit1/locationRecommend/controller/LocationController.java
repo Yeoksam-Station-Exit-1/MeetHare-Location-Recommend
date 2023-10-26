@@ -30,7 +30,7 @@ public class LocationController {
     }
 
     @GetMapping("/myStation")
-    public ResponseEntity<?> findMyStation(@RequestParam String stationName) throws Exception {
+    public ResponseEntity<?> findMyStation(@RequestParam("stationName") String stationName ) throws Exception {
         locationService.findMyStation(stationName);
         return new ResponseEntity<>(HttpStatus.OK);
     }

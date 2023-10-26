@@ -9,8 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FindMyStatinoRespDto {
+public class FindMyStationRespDto {
+    int stationId;
+    String stationName; //역이름
     double longitude; //경도
     double latitude; //위도
-    String stationName; //역이름
+    int infraCount;
 }

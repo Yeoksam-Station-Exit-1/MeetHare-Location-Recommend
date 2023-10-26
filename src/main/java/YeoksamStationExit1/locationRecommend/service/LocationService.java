@@ -1,9 +1,13 @@
 package YeoksamStationExit1.locationRecommend.service;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
+import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
+import YeoksamStationExit1.locationRecommend.repository.QLocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +24,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class LocationService {
+
+
+    private final QLocationRepository QLocationRepository;
 
     @Value("${kakao.key}")
     private String key;
@@ -102,4 +109,16 @@ public class LocationService {
     }
 
 
+    /**
+     * 역 이름을 기준으로 좌표를 검색하는 메서드
+     * */
+    public List<FindMyStationRespDto> findMyStation(String stationName){
+        List<FindMyStationRespDto> stationList = QLocationRepository.findByStationName(stationName);
+        for(FindMyStationRespDto dto : stationList){
+            System.out.println(dto.getStationName());
+            System.out.println(dto.getLatitude());
+            System.out.println(dto.getLongitude());
+        }
+        return stationList;
+    }
 }

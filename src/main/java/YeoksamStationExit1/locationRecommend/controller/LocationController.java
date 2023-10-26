@@ -12,6 +12,9 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.tomcat.util.json.JSONParser;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/map")
 @Slf4j
 @RequiredArgsConstructor
@@ -44,12 +47,15 @@ public class LocationController {
         System.out.println(recommendPlace.getStationName());
 
         // TODO : 우선순위 구하기
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/test")
-    public void testmoe() {
+    public ResponseEntity<?> testmoe() {
         System.out.println("test!!!!");
+        String str = "meethare";
+
+        return new ResponseEntity<>(str, HttpStatus.OK);
     }
 
 }

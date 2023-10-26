@@ -1,6 +1,7 @@
 package YeoksamStationExit1.locationRecommend.service;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.FindMyStatinoRespDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,6 +100,16 @@ public class LocationService {
         System.out.println("중심위도 : " +centerCoordinates[1] );
 
         return findNearbyAreas(centerCoordinates);
+    }
+
+
+    /**
+     * 역 이름을 기준으로 좌표를 검색하는 메서드
+     * */
+    public FindMyStatinoRespDto findMyStation(String stationName){
+
+
+
     }
 
 

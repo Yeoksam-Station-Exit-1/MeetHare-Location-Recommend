@@ -112,16 +112,13 @@ public class LocationService {
     /**
      * 역 이름을 기준으로 좌표를 검색하는 메서드
      * */
-    public FindMyStationRespDto findMyStation(String stationName){
-
-        List<FindMyStationRespDto> list = QLocationRepository.findByStationName(stationName);
-        for(FindMyStationRespDto dto : list){
+    public List<FindMyStationRespDto> findMyStation(String stationName){
+        List<FindMyStationRespDto> stationList = QLocationRepository.findByStationName(stationName);
+        for(FindMyStationRespDto dto : stationList){
             System.out.println(dto.getStationName());
             System.out.println(dto.getLatitude());
             System.out.println(dto.getLongitude());
         }
-        return null;
+        return stationList;
     }
-
-
 }

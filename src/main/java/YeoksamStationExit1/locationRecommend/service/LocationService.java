@@ -157,7 +157,8 @@ public class LocationService {
 
             URI uri = URI.create(apiUrl);
             String response = restTemplate.getForObject(uri, String.class);
-            TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), response);
+            TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
+                    response);
             list.add(tpu);
         }
 

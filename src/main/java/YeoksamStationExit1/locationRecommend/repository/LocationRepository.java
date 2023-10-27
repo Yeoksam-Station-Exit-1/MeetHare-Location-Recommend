@@ -1,9 +1,10 @@
 package YeoksamStationExit1.locationRecommend.repository;
 
-import YeoksamStationExit1.locationRecommend.entity.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import YeoksamStationExit1.locationRecommend.entity.Station;
 
 import java.util.List;
 import java.util.Set;

@@ -10,14 +10,17 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import static YeoksamStationExit1.locationRecommend.entity.QStation.station;
+
 @Slf4j
 @Repository
-public class QLocationRepositoryImpl implements QLocationRepository{
+public class QLocationRepositoryImpl implements QLocationRepository {
 
     private final JPAQueryFactory queryFactory;
+
     public QLocationRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
+
     @Override
     public List<FindMyStationRespDto> findByStationName(String stationName) {
         log.info("stationName: " + stationName);
@@ -32,7 +35,8 @@ public class QLocationRepositoryImpl implements QLocationRepository{
                 .where(keywordSearch(stationName))
                 .fetch();
     }
-    private BooleanExpression keywordSearch(String keyword){
+
+    private BooleanExpression keywordSearch(String keyword) {
         return keyword == null ? null : station.stationName.contains(keyword);
     }
 }

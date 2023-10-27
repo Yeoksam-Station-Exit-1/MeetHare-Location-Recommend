@@ -11,5 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TransPathPerUserDto {
     String userId;
+    Double longitude;
+    Double latitude;
     String transPath;
 }

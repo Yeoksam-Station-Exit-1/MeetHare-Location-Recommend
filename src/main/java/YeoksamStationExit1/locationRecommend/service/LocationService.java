@@ -2,10 +2,12 @@ package YeoksamStationExit1.locationRecommend.service;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
-import YeoksamStationExit1.locationRecommend.entity.StationInfra;
-// import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
+import YeoksamStationExit1.locationRecommend.entity.Station;
+import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +27,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class LocationService {
 
-    // private final LocationRepository locationRepository;
+    @Autowired
+    private final LocationRepository locationRepository;
 
     @Value("${kakao.key}")
     private String kakaokey;
@@ -111,28 +114,33 @@ public class LocationService {
         return findNearbyAreas(centerCoordinates);
     }
 
-    public StationInfra findPlaceByInfracount(Set<String> placeNames) {
+    public Station findPlaceByInfracount(Set<String> placeNames) {
+
+        // Iterator<String> iter = placeNames.iterator();
+        // List<String> test = new ArrayList<>();
+
+        // while (iter.hasNext()) {
+        // test.add(iter.next());
+        // }
 
         // 인프라 순으로 가져오기
-        // List<StationInfra> list = locationRepository.findByInfraCount(placeNames);
+        List<Station> list = locationRepository.findByInfraCount(placeNames);
         /*
          * 차후 인프라 많은 곳, 적은 곳 선택하여 목적지 정하는 기능을 위해
          * infracount 순으로 리스트에 넣어 둠
          * 1차 배포를 위해서 가장 infracount가 많은 장소를 리턴
          * 
          */
-        // return list.get(0);
-        return null;
+        return list.get(0);
 
     }
 
     public List<TransPathPerUserDto> searchPubTransPath(List<FindCenterCoordinatesReqDto> req,
-            StationInfra recommendPlace) {
+            Station recommendPlace) {
 
         List<TransPathPerUserDto> list = new ArrayList<>();
 
         for (FindCenterCoordinatesReqDto rq : req) {
-
             RestTemplate restTemplate = new RestTemplate();
 
             String apiUrl = odsayurl + "?lang=0&output=json"
@@ -145,14 +153,8 @@ public class LocationService {
 
             URI uri = URI.create(apiUrl);
             String response = restTemplate.getForObject(uri, String.class);
-            System.out.println(response);
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println();
             TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), response);
             list.add(tpu);
-
         }
 
         return list;

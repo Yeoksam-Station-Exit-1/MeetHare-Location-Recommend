@@ -1,9 +1,9 @@
 package YeoksamStationExit1.locationRecommend.controller;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
-import YeoksamStationExit1.locationRecommend.entity.StationInfra;
-// import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
+import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.service.LocationService;
 
 import java.util.HashSet;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.tomcat.util.json.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LocationController {
 
-    // private final LocationRepository locationRepository;
-
+    @Autowired
     private final LocationService locationService;
 
     @PostMapping("/middlespot")
@@ -40,14 +40,14 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        StationInfra recommendPlace = locationService.findPlaceByInfracount(placeNames);
-
+        Station recommendPlace = locationService.findPlaceByInfracount(placeNames);
         List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
 
         System.out.println(recommendPlace.getStationName());
+        RecommentResDto res = new RecommentResDto(recommendPlace, list);
 
         // TODO : 우선순위 구하기
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/test")

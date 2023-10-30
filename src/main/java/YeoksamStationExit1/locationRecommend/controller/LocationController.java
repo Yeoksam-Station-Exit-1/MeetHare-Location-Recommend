@@ -44,7 +44,6 @@ public class LocationController {
         System.out.println(recommendPlace.getStationName());
         RecommentResDto res = new RecommentResDto(recommendPlace, list);
 
-        // TODO : 우선순위 구하기
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -61,6 +60,7 @@ public class LocationController {
      */
     @GetMapping("/myStation")
     public ResponseEntity<?> findMyStation(@RequestParam("stationName") String stationName) throws Exception {
+        System.out.println(stationName);
         List<FindMyStationRespDto> stationList = locationService.findMyStation(stationName);
         return new ResponseEntity<>(stationList, HttpStatus.OK);
     }

@@ -2,12 +2,6 @@ spring:
   profiles:
     active: secret
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://k9a702.p.ssafy.io:3306/locationRec?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: location
-    password: meethare1!
-
   jpa:
     open-in-view: true
     hibernate:

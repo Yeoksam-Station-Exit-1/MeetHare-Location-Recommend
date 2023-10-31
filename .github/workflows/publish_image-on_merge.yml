@@ -31,7 +31,7 @@ jobs:
       - name: Set YML
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.application_secret }}" | base64 --decode > src/main/resources/application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" | base64 --decode > src/main/resources/application-secret.yml
           find src
 
       # Gradle Dependency 캐싱

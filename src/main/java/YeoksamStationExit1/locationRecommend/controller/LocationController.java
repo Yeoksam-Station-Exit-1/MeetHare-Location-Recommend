@@ -64,4 +64,12 @@ public class LocationController {
         List<FindMyStationRespDto> stationList = locationService.findMyStation(stationName);
         return new ResponseEntity<>(stationList, HttpStatus.OK);
     }
+
+    @GetMapping("/distance")
+    public ResponseEntity<?> findAvgDistanceByTime() {
+//        locationService.findAvgDistanceByTime();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 }

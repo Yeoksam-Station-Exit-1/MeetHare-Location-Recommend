@@ -29,4 +29,17 @@ public class Station {
 
     @Column(name = "infra_count")
     private int infraCount;
+
+    private double min5distance;
+    private double min10distance;
+    private double min15distance;
+    private double min20distance;
+    private double min25distance;
+    private double min30distance;
+    private double min35distance;
+    private double min40distance;
+    private double min45distance;
+    private double min50distance;
+    private double min55distance;
+    private double min60distance;
 }

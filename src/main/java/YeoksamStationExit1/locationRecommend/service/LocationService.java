@@ -249,23 +249,6 @@ public class LocationService {
     /**
      * 출발지와 모든 등시선도 좌표사이의 거리를 구한 후 그 평균을 구하는 메서드
      * */
-    public double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) { //시작위도, 경도, 끝 위도 경도 순서
-        final int R = 6371; // 지구의 반지름 (단위: km)
-
-        double lat1Rad = Math.toRadians(lat1);
-        double lon1Rad = Math.toRadians(lon1);
-        double lat2Rad = Math.toRadians(lat2);
-        double lon2Rad = Math.toRadians(lon2);
-
-        double dlat = lat2Rad - lat1Rad;
-        double dlon = lon2Rad - lon1Rad;
-
-        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dlon / 2), 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-
-        return R * c;
-    }
-
     public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
         // 평면 거리를 계산할 때 사용할 상수 (단위: km)
         final double kmPerDegreeLat = 111.32;

@@ -1,6 +1,7 @@
 package YeoksamStationExit1.locationRecommend.service;
 
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
@@ -278,6 +279,15 @@ public class LocationService {
         double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
 
         return flatDistance;
+    }
+
+    public void selectAll(){
+        List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
+        for (GetStationCoordinateResDto dto : list ){
+            System.out.println(dto.getStationId());
+            System.out.println(dto.getLatitude());
+            System.out.println(dto.getLongitude());
+        }
     }
 
 

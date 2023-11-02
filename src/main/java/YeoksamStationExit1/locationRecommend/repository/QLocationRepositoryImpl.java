@@ -1,6 +1,8 @@
 package YeoksamStationExit1.locationRecommend.repository;
 
 import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetAvgStationResDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -39,4 +41,17 @@ public class QLocationRepositoryImpl implements QLocationRepository {
     private BooleanExpression keywordSearch(String keyword) {
         return keyword == null ? null : station.stationName.contains(keyword);
     }
+
+    @Override
+    public List<GetStationCoordinateResDto> findAll() {
+
+        return queryFactory
+                .select(Projections.constructor(GetStationCoordinateResDto.class,
+                        station.stationId.as("stationId"),
+                        station.longitude.as("longitude"),
+                        station.latitude.as("latitude")))
+                .from(station)
+                .fetch();
+    }
+
 }

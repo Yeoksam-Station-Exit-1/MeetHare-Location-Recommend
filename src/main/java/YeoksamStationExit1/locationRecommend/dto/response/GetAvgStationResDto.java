@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GetAvgStationResDto {
     int stationId;
-    String stationName; //역이름
     double min5distance;
     double min10distance;
     double min15distance;

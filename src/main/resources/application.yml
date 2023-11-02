@@ -16,4 +16,7 @@ kakao:
 odsay:
   key: ${odsaykey}
 
+map:
+  key: ${mapkey}
+
 

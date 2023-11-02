@@ -67,7 +67,8 @@ public class LocationController {
 
     @GetMapping("/distance")
     public ResponseEntity<?> findAvgDistanceByTime() {
-//        locationService.findAvgDistanceByTime();
+        double avgDistance = locationService.findAvgDistanceByTime();
+        System.out.println("avgDistance " + avgDistance);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

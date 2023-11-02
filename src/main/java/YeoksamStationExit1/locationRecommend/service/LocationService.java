@@ -6,6 +6,8 @@ import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
 import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
 import YeoksamStationExit1.locationRecommend.repository.QLocationRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +44,10 @@ public class LocationService {
     @Value("${odsay.key}")
     private String odsaykey;
     private String odsayurl = "https://api.odsay.com/v1/api/searchPubTransPathT";
+
+    @Value("${map.key}")
+    private String mapkey;
+    private String mapurl = "https://api.mapbox.com/isochrone/v1/mapbox/driving-traffic";
 
     /**
      * [2] 중심좌표 기준 가까운 지하철 역을 구하는 메서드
@@ -133,14 +140,14 @@ public class LocationService {
          * 차후 인프라 많은 곳, 적은 곳 선택하여 목적지 정하는 기능을 위해
          * infracount 순으로 리스트에 넣어 둠
          * 1차 배포를 위해서 가장 infracount가 많은 장소를 리턴
-         * 
+         *
          */
         return list.get(0);
 
     }
 
     public List<TransPathPerUserDto> searchPubTransPath(List<FindCenterCoordinatesReqDto> req,
-            Station recommendPlace) {
+                                                        Station recommendPlace) {
 
         List<TransPathPerUserDto> list = new ArrayList<>();
 
@@ -178,4 +185,102 @@ public class LocationService {
         }
         return stationList;
     }
+
+    /**
+     * db 좌표를 사용해 출발지 좌표와의 거리를 구하는 메서드 [1]
+     * api 요청 형식 : 기본url/이동수단/경도,위도?contours_minutes=이동시간&access_token=토큰A&generalize=윤곽선단순화(max=500)
+     */
+    public double findAvgDistanceByTime() {
+        double startLong = 127.0364604; //경도
+        double startLat = 37.50066001; //위도
+//        QLocationRepository.select();
+        RestTemplate restTemplate = new RestTemplate();
+        URI targetUrl = UriComponentsBuilder
+                .fromUriString(mapurl) // 기본 url
+                .path("/{origin},{destination}")
+                .queryParam("contours_minutes", 5) // 이동시간
+                .queryParam("access_token", mapkey) // access token
+                .queryParam("generalize", 500) //
+                .buildAndExpand(startLong, startLat)
+                .encode(StandardCharsets.UTF_8) // 인코딩
+                .toUri();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
+
+        String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
+
+        // Jackson ObjectMapper 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        double distance = 0.0;
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonResponse);// JSON 문자열을 JsonNode로 파싱
+
+            JsonNode coordinatesNode = jsonNode // "features" 배열에서 "coordinates" 배열 추출
+                    .path("features")
+                    .get(0) // 첫 번째 요소
+                    .path("geometry")
+                    .path("coordinates");
+
+            // 좌표 값을 담을 리스트 생성
+            List<List<Double>> coordinatesList = new ArrayList<>();
+
+            double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
+            // 좌표 배열을 리스트에 추가
+            for (JsonNode coord : coordinatesNode) {
+                double endLong = coord.get(0).asDouble(); //경도
+                double endLat = coord.get(1).asDouble(); //위도
+                sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
+                List<Double> point = Arrays.asList(endLat, endLong); //위도경도순서
+                coordinatesList.add(point);
+            }
+            // 좌표 리스트 출력
+            double pointCnt = coordinatesList.size(); //등시선도좌표개수
+            System.out.println("리스트크기" + pointCnt);
+            distance = sumDistanceOfPoint/pointCnt;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return distance;
+    }//
+
+    /**
+     * 출발지와 모든 등시선도 좌표사이의 거리를 구한 후 그 평균을 구하는 메서드
+     * */
+    public double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) { //시작위도, 경도, 끝 위도 경도 순서
+        final int R = 6371; // 지구의 반지름 (단위: km)
+
+        double lat1Rad = Math.toRadians(lat1);
+        double lon1Rad = Math.toRadians(lon1);
+        double lat2Rad = Math.toRadians(lat2);
+        double lon2Rad = Math.toRadians(lon2);
+
+        double dlat = lat2Rad - lat1Rad;
+        double dlon = lon2Rad - lon1Rad;
+
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dlon / 2), 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        return R * c;
+    }
+
+    public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
+        // 평면 거리를 계산할 때 사용할 상수 (단위: km)
+        final double kmPerDegreeLat = 111.32;
+        final double kmPerDegreeLon = 111.32;
+
+        // 위도 및 경도 간의 차이를 계산
+        double latDiff = Math.abs(lat2 - lat1);
+        double lonDiff = Math.abs(lon2 - lon1);
+
+        // 평면 거리 계산
+        double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
+
+        return flatDistance;
+    }
+
+
+
+
 }

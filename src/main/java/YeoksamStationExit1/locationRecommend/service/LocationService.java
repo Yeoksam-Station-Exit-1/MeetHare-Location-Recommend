@@ -195,20 +195,8 @@ public class LocationService {
         double startLong = 127.0364604; //경도
         double startLat = 37.50066001; //위도
 //        QLocationRepository.select();
-        RestTemplate restTemplate = new RestTemplate();
-        URI targetUrl = UriComponentsBuilder
-                .fromUriString(mapurl) // 기본 url
-                .path("/{origin},{destination}")
-                .queryParam("contours_minutes", 5) // 이동시간
-                .queryParam("access_token", mapkey) // access token
-                .queryParam("generalize", 500) //
-                .buildAndExpand(startLong, startLat)
-                .encode(StandardCharsets.UTF_8) // 인코딩
-                .toUri();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
-
-        String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
+        String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
 
         // Jackson ObjectMapper 생성
         ObjectMapper objectMapper = new ObjectMapper();
@@ -247,7 +235,30 @@ public class LocationService {
     }//
 
     /**
-     * 출발지와 모든 등시선도 좌표사이의 거리를 구한 후 그 평균을 구하는 메서드
+     * api 요청을 전송하여 등시선도 좌표를 받아오는 메서드 [1]
+     * parameter: 출발지의 위경도 좌표
+     * return: 응답된 json
+     * */
+    public String getMapByTime(double startLong, double startLat ){
+        RestTemplate restTemplate = new RestTemplate();
+        URI targetUrl = UriComponentsBuilder
+                .fromUriString(mapurl) // 기본 url
+                .path("/{origin},{destination}")
+                .queryParam("contours_minutes", 5) // 이동시간
+                .queryParam("access_token", mapkey) // access token
+                .queryParam("generalize", 500) //
+                .buildAndExpand(startLong, startLat)
+                .encode(StandardCharsets.UTF_8) // 인코딩
+                .toUri();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
+
+        String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
+        return jsonResponse;
+    }
+
+    /**
+     * 출발지와 특정 등시선도 좌표사이의 거리를 구하는 메서드[2]
      * */
     public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
         // 평면 거리를 계산할 때 사용할 상수 (단위: km)

@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LocationController {
 
-    @Autowired
     private final LocationService locationService;
 
     @PostMapping("/middlespot")

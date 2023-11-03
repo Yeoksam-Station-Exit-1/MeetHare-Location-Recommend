@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -27,11 +28,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LocationService {
 
     private final LocationRepository locationRepository;
@@ -49,6 +52,7 @@ public class LocationService {
     @Value("${map.key}")
     private String mapkey;
     private String mapurl = "https://api.mapbox.com/isochrone/v1/mapbox/driving-traffic";
+    private List<GetStationCoordinateResDto> list;
 
     /**
      * [2] 중심좌표 기준 가까운 지하철 역을 구하는 메서드
@@ -192,14 +196,38 @@ public class LocationService {
      * api 요청 형식 : 기본url/이동수단/경도,위도?contours_minutes=이동시간&access_token=토큰A&generalize=윤곽선단순화(max=500)
      */
     public double findAvgDistanceByTime() {
-        double startLong = 127.0364604; //경도
-        double startLat = 37.50066001; //위도
-//        QLocationRepository.select();
+        double distance = 0.0;
+        List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
+//        int stationId = list.get(1).getStationId();
+//        double startLong = list.get(1).getLongitude();
+//        double startLat = list.get(1).getLatitude();
 
-        String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
-        double distance = calAvgDistance(jsonResponse, startLong, startLat); //출발지와 모든 등시선도좌표상의 거리를 비표하여 평균거리를 구하는 메서드
+//        for (int i = 10; i < 50; i++) {
+//            int stationId = list.get(i).getStationId();
+//            double startLong = list.get(i).getLongitude();
+//            double startLat = list.get(i).getLatitude();
 
+        for (GetStationCoordinateResDto dto : list) {
+            int stationId = dto.getStationId();
+            double startLong = dto.getLongitude();
+            double startLat = dto.getLatitude();
 
+            String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
+            distance = calAvgDistance(jsonResponse, startLong, startLat); //출발지와 모든 등시선도좌표상의 거리를 비표하여 평균거리를 구하는 메서드
+
+            System.out.println("distance " + distance);
+            if (Double.isNaN(distance)) {
+                distance = 0.0; // 또는 다른 기본값으로 설정
+            }
+            QLocationRepository.updateDistanceColumn(stationId, distance);
+
+            try {
+                // 요청 간격을 조절하기 위한 딜레이
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return distance;
     }//
 
@@ -207,13 +235,13 @@ public class LocationService {
      * api 요청을 전송하여 등시선도 좌표를 받아오는 메서드 [1]
      * parameter: 출발지의 위경도 좌표
      * return: 응답된 json
-     * */
-    public String getMapByTime(double startLong, double startLat ){
+     */
+    public String getMapByTime(double startLong, double startLat) {
         RestTemplate restTemplate = new RestTemplate();
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(mapurl) // 기본 url
                 .path("/{origin},{destination}")
-                .queryParam("contours_minutes", "5") // 이동시간
+                .queryParam("contours_minutes", "55") // 이동시간
                 .queryParam("access_token", mapkey) // access token
                 .queryParam("generalize", 500) //
                 .buildAndExpand(startLong, startLat)
@@ -229,8 +257,8 @@ public class LocationService {
 
     /**
      * 출발지와 모든 등시선조 좌표 사이의 거리를 비교하여 평균거리를 구하는 메서드[2]
-     * */
-    public double calAvgDistance(String jsonResponse,double startLong, double startLat  ){
+     */
+    public double calAvgDistance(String jsonResponse, double startLong, double startLat) {
         // Jackson ObjectMapper 생성
         ObjectMapper objectMapper = new ObjectMapper();
         double distance = 0.0;
@@ -250,7 +278,6 @@ public class LocationService {
             double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
             // 좌표 배열을 리스트에 추가
             for (JsonNode coord : coordinatesNode) {
-                System.out.println("크기 : "+ coordinatesList.size());
                 double endLong = coord.get(0).asDouble(); //경도
                 double endLat = coord.get(1).asDouble(); //위도
                 sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
@@ -259,8 +286,10 @@ public class LocationService {
             }
             // 좌표 리스트 출력
             double pointCnt = coordinatesList.size(); //등시선도좌표개수
-            System.out.println(coordinatesList);
-            distance = sumDistanceOfPoint/pointCnt;
+            double avgDistance = (sumDistanceOfPoint / pointCnt) * 1000;
+            DecimalFormat df = new DecimalFormat("#.######");
+            String formattedNumber = df.format(avgDistance);
+            distance = Double.parseDouble(formattedNumber);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -270,7 +299,7 @@ public class LocationService {
 
     /**
      * 출발지와 특정 등시선도 좌표사이의 거리를 구하는 메서드[3]
-     * */
+     */
     public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
         // 평면 거리를 계산할 때 사용할 상수 (단위: km)
         final double kmPerDegreeLat = 111.32;
@@ -286,16 +315,25 @@ public class LocationService {
         return flatDistance;
     }
 
-    public void selectAll(){
+    public void selectAll() {
         List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
-        for (GetStationCoordinateResDto dto : list ){
-            System.out.println(dto.getStationId());
-            System.out.println(dto.getLatitude());
-            System.out.println(dto.getLongitude());
-        }
+
+        int id = list.get(0).getStationId();
+        System.out.println(id);
+        double lat = list.get(0).getLatitude();
+        System.out.println(lat);
+        double log = list.get(0).getLongitude();
+        System.out.println(log);
+
+        QLocationRepository.updateDistanceColumn(id, 3);
+
+
+//        for (GetStationCoordinateResDto dto : list ){
+//            System.out.println(dto.getStationId());
+//            System.out.println(dto.getLatitude());
+//            System.out.println(dto.getLongitude());
+//        }
     }
-
-
 
 
 }

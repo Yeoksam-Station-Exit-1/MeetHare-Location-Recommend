@@ -9,4 +9,6 @@ public interface QLocationRepository {
     List<FindMyStationRespDto> findByStationName(String stationName);
 
     List<GetStationCoordinateResDto> findAll();
+
+    void updateDistanceColumn(int stationDistanceId, double distance);
 }

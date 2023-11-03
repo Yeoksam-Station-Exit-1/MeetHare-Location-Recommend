@@ -19,6 +19,7 @@ public class StationDistance {
 
     @Id
     @Column(name = "station_Distance_id") // station_id를 id로 사용
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stationDistanceId;
 
     @OneToOne

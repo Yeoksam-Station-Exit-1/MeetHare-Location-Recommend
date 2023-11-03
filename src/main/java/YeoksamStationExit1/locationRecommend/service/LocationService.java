@@ -197,40 +197,9 @@ public class LocationService {
 //        QLocationRepository.select();
 
         String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
+        double distance = calAvgDistance(jsonResponse, startLong, startLat); //출발지와 모든 등시선도좌표상의 거리를 비표하여 평균거리를 구하는 메서드
 
-        // Jackson ObjectMapper 생성
-        ObjectMapper objectMapper = new ObjectMapper();
-        double distance = 0.0;
 
-        try {
-            JsonNode jsonNode = objectMapper.readTree(jsonResponse);// JSON 문자열을 JsonNode로 파싱
-
-            JsonNode coordinatesNode = jsonNode // "features" 배열에서 "coordinates" 배열 추출
-                    .path("features")
-                    .get(0) // 첫 번째 요소
-                    .path("geometry")
-                    .path("coordinates");
-
-            // 좌표 값을 담을 리스트 생성
-            List<List<Double>> coordinatesList = new ArrayList<>();
-
-            double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
-            // 좌표 배열을 리스트에 추가
-            for (JsonNode coord : coordinatesNode) {
-                double endLong = coord.get(0).asDouble(); //경도
-                double endLat = coord.get(1).asDouble(); //위도
-                sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
-                List<Double> point = Arrays.asList(endLat, endLong); //위도경도순서
-                coordinatesList.add(point);
-            }
-            // 좌표 리스트 출력
-            double pointCnt = coordinatesList.size(); //등시선도좌표개수
-            System.out.println("리스트크기" + pointCnt);
-            distance = sumDistanceOfPoint/pointCnt;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return distance;
     }//
 
@@ -273,6 +242,46 @@ public class LocationService {
         double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
 
         return flatDistance;
+    }
+
+    /**
+     * 출발지와 모든 등시선조 좌표 사이의 거리를 비교하여 평균거리를 구하는 메서드[3]
+     * */
+    public double calAvgDistance(String jsonResponse,double startLong, double startLat  ){
+        // Jackson ObjectMapper 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        double distance = 0.0;
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonResponse);// JSON 문자열을 JsonNode로 파싱
+
+            JsonNode coordinatesNode = jsonNode // "features" 배열에서 "coordinates" 배열 추출
+                    .path("features")
+                    .get(0) // 첫 번째 요소
+                    .path("geometry")
+                    .path("coordinates");
+
+            // 좌표 값을 담을 리스트 생성
+            List<List<Double>> coordinatesList = new ArrayList<>();
+
+            double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
+            // 좌표 배열을 리스트에 추가
+            for (JsonNode coord : coordinatesNode) {
+                double endLong = coord.get(0).asDouble(); //경도
+                double endLat = coord.get(1).asDouble(); //위도
+                sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
+                List<Double> point = Arrays.asList(endLat, endLong); //위도경도순서
+                coordinatesList.add(point);
+            }
+            // 좌표 리스트 출력
+            double pointCnt = coordinatesList.size(); //등시선도좌표개수
+            System.out.println("리스트크기" + pointCnt);
+            distance = sumDistanceOfPoint/pointCnt;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return distance;
     }
 
     public void selectAll(){

@@ -178,4 +178,8 @@ public class LocationService {
         }
         return stationList;
     }
+
+    public List<String> findAllStation(){
+        return locationRepository.findAllStationName();
+    }
 }

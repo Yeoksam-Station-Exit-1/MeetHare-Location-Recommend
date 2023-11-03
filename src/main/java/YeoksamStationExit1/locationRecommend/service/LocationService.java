@@ -213,7 +213,7 @@ public class LocationService {
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(mapurl) // 기본 url
                 .path("/{origin},{destination}")
-                .queryParam("contours_minutes", 5) // 이동시간
+                .queryParam("contours_minutes", "5") // 이동시간
                 .queryParam("access_token", mapkey) // access token
                 .queryParam("generalize", 500) //
                 .buildAndExpand(startLong, startLat)
@@ -223,29 +223,12 @@ public class LocationService {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
 
         String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
+        System.out.println(jsonResponse);
         return jsonResponse;
     }
 
     /**
-     * 출발지와 특정 등시선도 좌표사이의 거리를 구하는 메서드[2]
-     * */
-    public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
-        // 평면 거리를 계산할 때 사용할 상수 (단위: km)
-        final double kmPerDegreeLat = 111.32;
-        final double kmPerDegreeLon = 111.32;
-
-        // 위도 및 경도 간의 차이를 계산
-        double latDiff = Math.abs(lat2 - lat1);
-        double lonDiff = Math.abs(lon2 - lon1);
-
-        // 평면 거리 계산
-        double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
-
-        return flatDistance;
-    }
-
-    /**
-     * 출발지와 모든 등시선조 좌표 사이의 거리를 비교하여 평균거리를 구하는 메서드[3]
+     * 출발지와 모든 등시선조 좌표 사이의 거리를 비교하여 평균거리를 구하는 메서드[2]
      * */
     public double calAvgDistance(String jsonResponse,double startLong, double startLat  ){
         // Jackson ObjectMapper 생성
@@ -262,11 +245,12 @@ public class LocationService {
                     .path("coordinates");
 
             // 좌표 값을 담을 리스트 생성
-            List<List<Double>> coordinatesList = new ArrayList<>();
+            Set<List<Double>> coordinatesList = new HashSet<>();
 
             double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
             // 좌표 배열을 리스트에 추가
             for (JsonNode coord : coordinatesNode) {
+                System.out.println("크기 : "+ coordinatesList.size());
                 double endLong = coord.get(0).asDouble(); //경도
                 double endLat = coord.get(1).asDouble(); //위도
                 sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
@@ -275,13 +259,31 @@ public class LocationService {
             }
             // 좌표 리스트 출력
             double pointCnt = coordinatesList.size(); //등시선도좌표개수
-            System.out.println("리스트크기" + pointCnt);
+            System.out.println(coordinatesList);
             distance = sumDistanceOfPoint/pointCnt;
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return distance;
+    }
+
+    /**
+     * 출발지와 특정 등시선도 좌표사이의 거리를 구하는 메서드[3]
+     * */
+    public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
+        // 평면 거리를 계산할 때 사용할 상수 (단위: km)
+        final double kmPerDegreeLat = 111.32;
+        final double kmPerDegreeLon = 111.32;
+
+        // 위도 및 경도 간의 차이를 계산
+        double latDiff = Math.abs(lat2 - lat1);
+        double lonDiff = Math.abs(lon2 - lon1);
+
+        // 평면 거리 계산
+        double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
+
+        return flatDistance;
     }
 
     public void selectAll(){

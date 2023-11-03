@@ -30,8 +30,33 @@ public class StationCrawlingController {
     private final LocationService locationService;
     private final StationTimeRepository stationTimeRepository;
 
-    @GetMapping("/time")
-    public ResponseEntity<?> stationCrawling(@RequestParam("offset") int offset) {
+//    @GetMapping("/time")
+//    public ResponseEntity<?> crawling(){
+//
+//        System.setProperty("webdriver.chrome.driver",
+//                "./chromedriver.exe");
+//        ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--remote-allow-origins=*");
+//        WebDriver driver = new ChromeDriver(options);
+//
+//        // 지도 서비스 페이지 열기
+//        driver.get("https://web.postman.co/workspace/My-Workspace~5fd318ca-92db-402d-8258-42ddc743b548/request/create?requestId=704b6f07-f6b9-424c-b54e-32773b6fe7da");
+//
+//        WebElement wewe = driver.findElement(By.className("public-DraftStyleDefault-ltr"));
+//
+//        wewe.sendKeys("되냐?");
+//
+//        System.out.println(wewe);
+//
+//        WebElement btn = driver.findElement(By.cssSelector("btn-group-separated>div"));
+//
+//        btn.click();
+//
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+
+//    @GetMapping("/time")
+    public ResponseEntity<?> stationCrawling( int offset) {
 
 
         System.setProperty("webdriver.chrome.driver",
@@ -51,7 +76,7 @@ public class StationCrawlingController {
             e.printStackTrace(); // 예외 처리
         }
 
-        WebElement navbar = driver.findElement(By.className("buJfZU"));
+        WebElement navbar = driver.findElement(By.className("iLeNBU"));
         System.out.println(navbar);
         navbar.click();
 
@@ -163,8 +188,8 @@ public class StationCrawlingController {
 
         }
 
-        }catch(Exception ignored){
-
+        }catch(Exception e){
+            driver.quit();
         }
 
         try {

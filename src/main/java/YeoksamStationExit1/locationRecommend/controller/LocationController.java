@@ -81,7 +81,11 @@ public class LocationController {
      * */
     @PostMapping("/moveableArea")
     public ResponseEntity<?> getMoveableArea(@RequestBody List<FindAvgDistanceReqDto> req) {
-        locationService.checkMovableArea(req);
+        Set<String> stationList = locationService.checkMovableArea(req);
+        for ( String station: stationList
+        ) {
+            System.out.println(station);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

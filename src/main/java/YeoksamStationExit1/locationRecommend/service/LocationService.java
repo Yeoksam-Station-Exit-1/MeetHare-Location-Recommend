@@ -340,7 +340,7 @@ public class LocationService {
     /**
      * db등시선도 기준 이동가능한 범위 체크
      * */
-    public void checkMovableArea(List<FindAvgDistanceReqDto> req) {
+    public Set<String> checkMovableArea(List<FindAvgDistanceReqDto> req) {
 
         //db데이터 접근을 위한 쿼리 생성
         GetAvgDistanceRespDto stationInfo1 = QLocationRepository.findByStationId(req.get(0).getStationId());
@@ -381,6 +381,7 @@ public class LocationService {
         };
 
         GeometryFactory geometryFactory = new GeometryFactory();
+        Set<String> stationList = new HashSet<>();
 
         for (int i = 0; i < 12; i++) {
             // 원을 그리기 위한 반경 계산 (단위: 도)
@@ -399,8 +400,9 @@ public class LocationService {
             // 두 원이 교차하는지 확인
             Geometry intersection = circle1.intersection(circle2);
 
+
+
             if (!intersection.isEmpty()) {
-//                Coordinate[] intersectionCoordinates = intersection.getCoordinates();
                 Set<Coordinate> intersectionCoordinatesSet = new HashSet<>();
                 Coordinate[] intersectionCoordinates = intersection.getCoordinates();
                 intersectionCoordinatesSet.addAll(Arrays.asList(intersectionCoordinates));
@@ -410,17 +412,40 @@ public class LocationService {
                 for (Coordinate coordinate : intersectionCoordinatesSet) {
                     System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
                 }
+                stationList = findCenterCoordinatesV2(intersectionCoordinatesSet);
                 break;
             } else {
                 System.out.println("교차점이 없습니다. 반지름: " + distancesByUser1[i] + " km");
             }
 
 
+        }//for
 
+
+        return stationList;
+
+
+    }
+
+    /**
+     * 무게중심좌표 구하기 version2
+     * */
+    public Set<String> findCenterCoordinatesV2(Set<Coordinate> req) {
+        Set<Coordinate> positions = req;
+        double cnt = req.size(); // 사용자 수
+        double sumOfLong = 0; // 경도
+        double sumOfLat = 0; // 위도
+        for (Coordinate coordinate : positions) {
+            sumOfLong += coordinate.getX();
+            sumOfLat += coordinate.getY();
         }
+        double[] centerCoordinates = new double[2];
+        centerCoordinates[0] = Math.round((sumOfLong / cnt) * 100000000.0) / 100000000.0; // 경도
+        centerCoordinates[1] = Math.round((sumOfLat / cnt) * 100000000.0) / 100000000.0; // 위도
+        System.out.println("중심경도 : " + centerCoordinates[0]);
+        System.out.println("중심위도 : " + centerCoordinates[1]);
 
-
-
+        return findNearbyAreas(centerCoordinates);
     }
 
 

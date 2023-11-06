@@ -152,6 +152,20 @@ public class StationCrawlingController {
             searchTime.click();
 
             try {
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 처리
+            }
+
+
+            try {
+                WebElement switchoff = driver.findElement(By.className("on"));
+                switchoff.click();
+            } catch (Exception ignored) {
+            }
+
+
+            try {
                 Thread.sleep(5000);
             } catch (Exception e) {
                 e.printStackTrace(); // 예외 처리

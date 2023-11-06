@@ -348,7 +348,7 @@ public class LocationService {
 
         //출발지 좌표
         Coordinate startPoint1 = new Coordinate(req.get(0).getLongitude(), req.get(0).getLatitude());
-        Coordinate startPoint2 = new Coordinate(req.get(0).getLongitude(), req.get(0).getLatitude());
+        Coordinate startPoint2 = new Coordinate(req.get(0).getLongitude(), req.get(1).getLatitude());
 
         // 거리 칼럼 설정
         int[] distancesByUser1 = {
@@ -384,8 +384,8 @@ public class LocationService {
 
         for (int i = 0; i < 12; i++) {
             // 원을 그리기 위한 반경 계산 (단위: 도)
-            double radius1 = distancesByUser1[i] / 111.32;
-            double radius2 = distancesByUser2[i] / 111.32;
+            double radius1 = distancesByUser1[i] / 111.32  / 1000;
+            double radius2 = distancesByUser2[i] / 111.32  / 1000;
 
             // 출발지 좌표를 Point 객체로 생성
             Point point1 = geometryFactory.createPoint(startPoint1);
@@ -400,11 +400,14 @@ public class LocationService {
             Geometry intersection = circle1.intersection(circle2);
 
             if (!intersection.isEmpty()) {
+//                Coordinate[] intersectionCoordinates = intersection.getCoordinates();
+                Set<Coordinate> intersectionCoordinatesSet = new HashSet<>();
                 Coordinate[] intersectionCoordinates = intersection.getCoordinates();
-                System.out.println("교차점이 있습니다. "+i+" 유저1반지름: " + distancesByUser1[i] + " km");
-                System.out.println("교차점이 있습니다. "+i+" 유저2반지름: " + distancesByUser2[i] + " km");
+                intersectionCoordinatesSet.addAll(Arrays.asList(intersectionCoordinates));
+                System.out.println("교차점이 있습니다. "+i+" 유저1반지름: " + distancesByUser1[i] + " m");
+                System.out.println("교차점이 있습니다. "+i+" 유저2반지름: " + distancesByUser2[i] + " m");
                 System.out.println("교차 좌표: ");
-                for (Coordinate coordinate : intersectionCoordinates) {
+                for (Coordinate coordinate : intersectionCoordinatesSet) {
                     System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
                 }
                 break;

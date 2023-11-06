@@ -1,9 +1,8 @@
 package YeoksamStationExit1.locationRecommend.repository;
 
 import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
-import YeoksamStationExit1.locationRecommend.dto.response.GetAvgStationResDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetAvgDistanceRespDto;
 import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
-import YeoksamStationExit1.locationRecommend.entity.StationDistance;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -66,5 +65,31 @@ public class QLocationRepositoryImpl implements QLocationRepository {
                 .where(stationDistance.station.stationId.eq(stationId))
                 .execute();
     }
+
+
+    @Override
+    public GetAvgDistanceRespDto findByStationId(int stationId) {
+        log.info("stationId: " + stationId);
+        return queryFactory
+                .select(Projections.constructor(GetAvgDistanceRespDto.class,
+                        stationDistance.stationDistanceId.as("stationDistanceId"),
+                        stationDistance.station.stationId.as("stationId"),
+                        stationDistance.min5distance.as("min5distance"),
+                        stationDistance.min10distance.as("min10distance"),
+                        stationDistance.min15distance.as("min15distance"),
+                        stationDistance.min20distance.as("min20distance"),
+                        stationDistance.min25distance.as("min25distance"),
+                        stationDistance.min30distance.as("min30distance"),
+                        stationDistance.min35distance.as("min35distance"),
+                        stationDistance.min40distance.as("min40distance"),
+                        stationDistance.min45distance.as("min45distance"),
+                        stationDistance.min50distance.as("min50distance"),
+                        stationDistance.min55distance.as("min55distance"),
+                        stationDistance.min60distance.as("min60distance")))
+                .from(stationDistance)
+                .where(stationDistance.station.stationId.eq(stationId))
+                .fetchOne();
+    }
+
 
 }

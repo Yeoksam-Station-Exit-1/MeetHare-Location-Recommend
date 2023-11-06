@@ -1,5 +1,6 @@
 package YeoksamStationExit1.locationRecommend.controller;
 
+import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
@@ -78,8 +79,8 @@ public class LocationController {
     /**
      * 특정 좌표 별 이동가능한 등시선도 확인 + 교차되는 좌표를 구하는 메서드
      * */
-    @PostMapping("/move")
-    public ResponseEntity<?> getMoveableArea(@RequestBody List<FindCenterCoordinatesReqDto> req) {
+    @PostMapping("/moveableArea")
+    public ResponseEntity<?> getMoveableArea(@RequestBody List<FindAvgDistanceReqDto> req) {
         locationService.checkMovableArea(req);
         return new ResponseEntity<>(HttpStatus.OK);
     }

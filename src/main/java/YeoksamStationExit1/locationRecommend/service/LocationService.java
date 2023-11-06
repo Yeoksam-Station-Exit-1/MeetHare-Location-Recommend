@@ -1,6 +1,8 @@
 package YeoksamStationExit1.locationRecommend.service;
 
+import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetAvgDistanceRespDto;
 import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.locationtech.jts.geom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -327,7 +330,6 @@ public class LocationService {
 
         QLocationRepository.updateDistanceColumn(id, 3);
 
-
 //        for (GetStationCoordinateResDto dto : list ){
 //            System.out.println(dto.getStationId());
 //            System.out.println(dto.getLatitude());
@@ -338,7 +340,83 @@ public class LocationService {
     /**
      * db등시선도 기준 이동가능한 범위 체크
      * */
-    public void checkMovableArea(List<FindCenterCoordinatesReqDto> req){
+    public void checkMovableArea(List<FindAvgDistanceReqDto> req) {
+
+        //db데이터 접근을 위한 쿼리 생성
+        GetAvgDistanceRespDto stationInfo1 = QLocationRepository.findByStationId(req.get(0).getStationId());
+        GetAvgDistanceRespDto stationInfo2 = QLocationRepository.findByStationId(req.get(1).getStationId());
+
+        //출발지 좌표
+        Coordinate startPoint1 = new Coordinate(req.get(0).getLongitude(), req.get(0).getLatitude());
+        Coordinate startPoint2 = new Coordinate(req.get(0).getLongitude(), req.get(0).getLatitude());
+
+        // 거리 칼럼 설정
+        int[] distancesByUser1 = {
+                (int)stationInfo1.getMin5distance(),
+                (int)stationInfo1.getMin10distance(),
+                (int)stationInfo1.getMin15distance(),
+                (int)stationInfo1.getMin20distance(),
+                (int)stationInfo1.getMin25distance(),
+                (int)stationInfo1.getMin30distance(),
+                (int)stationInfo1.getMin35distance(),
+                (int)stationInfo1.getMin40distance(),
+                (int)stationInfo1.getMin45distance(),
+                (int)stationInfo1.getMin50distance(),
+                (int)stationInfo1.getMin55distance(),
+                (int)stationInfo1.getMin60distance()
+        };
+        int[] distancesByUser2 = {
+                (int)stationInfo2.getMin5distance(),
+                (int)stationInfo2.getMin10distance(),
+                (int)stationInfo2.getMin15distance(),
+                (int)stationInfo2.getMin20distance(),
+                (int)stationInfo2.getMin25distance(),
+                (int)stationInfo2.getMin30distance(),
+                (int)stationInfo2.getMin35distance(),
+                (int)stationInfo2.getMin40distance(),
+                (int)stationInfo2.getMin45distance(),
+                (int)stationInfo2.getMin50distance(),
+                (int)stationInfo2.getMin55distance(),
+                (int)stationInfo2.getMin60distance()
+        };
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        for (int i = 0; i < 12; i++) {
+            // 원을 그리기 위한 반경 계산 (단위: 도)
+            double radius1 = distancesByUser1[i] / 111.32;
+            double radius2 = distancesByUser2[i] / 111.32;
+
+            // 출발지 좌표를 Point 객체로 생성
+            Point point1 = geometryFactory.createPoint(startPoint1);
+            Point point2 = geometryFactory.createPoint(startPoint2);
+
+            // 원을 그리기 위한 Polygon 생성
+            Polygon circle1 = (Polygon) point1.buffer(radius1);
+            Polygon circle2 = (Polygon) point2.buffer(radius2);
+
+
+            // 두 원이 교차하는지 확인
+            Geometry intersection = circle1.intersection(circle2);
+
+            if (!intersection.isEmpty()) {
+                Coordinate[] intersectionCoordinates = intersection.getCoordinates();
+                System.out.println("교차점이 있습니다. "+i+" 유저1반지름: " + distancesByUser1[i] + " km");
+                System.out.println("교차점이 있습니다. "+i+" 유저2반지름: " + distancesByUser2[i] + " km");
+                System.out.println("교차 좌표: ");
+                for (Coordinate coordinate : intersectionCoordinates) {
+                    System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
+                }
+                break;
+            } else {
+                System.out.println("교차점이 없습니다. 반지름: " + distancesByUser1[i] + " km");
+            }
+
+
+
+        }
+
+
 
     }
 

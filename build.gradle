@@ -40,7 +40,9 @@ dependencies {
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0'
 
 	//jts 사용을 위한 추가
-	implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.17.2'
+	// https://mvnrepository.com/artifact/org.locationtech.jts/jts-core
+	implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
+
 }
 
 // (4) queryDSL 추가 : QueryDSL 빌드 옵션

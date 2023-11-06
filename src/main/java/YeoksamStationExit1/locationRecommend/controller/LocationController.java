@@ -65,13 +65,25 @@ public class LocationController {
         return new ResponseEntity<>(stationList, HttpStatus.OK);
     }
 
-    @GetMapping("/distance")
+    /**
+     * 특정 좌표 기준 시간별 이동가능한 평균거리 구하는 메서드 -> db저장용
+     * */
     public ResponseEntity<?> findAvgDistanceByTime() {
         double avgDistance = locationService.findAvgDistanceByTime();
         System.out.println("avgDistance " + avgDistance);
-//        locationService.selectAll();
+        locationService.selectAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * 특정 좌표 별 이동가능한 등시선도 확인 + 교차되는 좌표를 구하는 메서드
+     * */
+    @PostMapping("/move")
+    public ResponseEntity<?> getMoveableArea(@RequestBody List<FindCenterCoordinatesReqDto> req) {
+        locationService.checkMovableArea(req);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 
 }

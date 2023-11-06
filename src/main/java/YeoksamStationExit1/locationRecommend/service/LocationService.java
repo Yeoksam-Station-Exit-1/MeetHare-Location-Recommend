@@ -335,5 +335,12 @@ public class LocationService {
 //        }
     }
 
+    /**
+     * db등시선도 기준 이동가능한 범위 체크
+     * */
+    public void checkMovableArea(List<FindCenterCoordinatesReqDto> req){
+
+    }
+
 
 }

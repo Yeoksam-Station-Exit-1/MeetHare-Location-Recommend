@@ -17,7 +17,7 @@ public class AutoController {
     private StationCrawlingController stationCrawlingController;
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling1() {
 
@@ -26,7 +26,7 @@ public class AutoController {
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling2() {
 
@@ -35,42 +35,42 @@ public class AutoController {
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling3() {
         stationCrawlingController.stationCrawling(150);
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling4() {
         stationCrawlingController.stationCrawling(200);
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling5() {
         stationCrawlingController.stationCrawling(250);
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling6() {
         stationCrawlingController.stationCrawling(300);
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling7() {
         stationCrawlingController.stationCrawling(350);
     }
 
     @Async
-//    @Scheduled(cron = "0 0/5 * * * *") // 5분마다 실행 (밀리초 단위)
+//    @Scheduled(cron = "* */5 7-22 * * *")
     @Scheduled(fixedRate = 300000)
     public void performCrawling8() {
         stationCrawlingController.stationCrawling(400);

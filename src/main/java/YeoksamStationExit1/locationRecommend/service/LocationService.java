@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import java.awt.geom.Point2D;
 
 import java.io.IOException;
 import java.net.URI;
@@ -201,15 +202,6 @@ public class LocationService {
     public double findAvgDistanceByTime() {
         double distance = 0.0;
         List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
-//        int stationId = list.get(1).getStationId();
-//        double startLong = list.get(1).getLongitude();
-//        double startLat = list.get(1).getLatitude();
-
-//        for (int i = 10; i < 50; i++) {
-//            int stationId = list.get(i).getStationId();
-//            double startLong = list.get(i).getLongitude();
-//            double startLat = list.get(i).getLatitude();
-
         for (GetStationCoordinateResDto dto : list) {
             int stationId = dto.getStationId();
             double startLong = dto.getLongitude();
@@ -339,7 +331,7 @@ public class LocationService {
 
     /**
      * db등시선도 기준 이동가능한 범위 체크
-     * */
+     */
     public Set<String> checkMovableArea(List<FindAvgDistanceReqDto> req) {
 
         //db데이터 접근을 위한 쿼리 생성
@@ -351,33 +343,33 @@ public class LocationService {
         Coordinate startPoint2 = new Coordinate(req.get(0).getLongitude(), req.get(1).getLatitude());
 
         // 거리 칼럼 설정
-        int[] distancesByUser1 = {
-                (int)stationInfo1.getMin5distance(),
-                (int)stationInfo1.getMin10distance(),
-                (int)stationInfo1.getMin15distance(),
-                (int)stationInfo1.getMin20distance(),
-                (int)stationInfo1.getMin25distance(),
-                (int)stationInfo1.getMin30distance(),
-                (int)stationInfo1.getMin35distance(),
-                (int)stationInfo1.getMin40distance(),
-                (int)stationInfo1.getMin45distance(),
-                (int)stationInfo1.getMin50distance(),
-                (int)stationInfo1.getMin55distance(),
-                (int)stationInfo1.getMin60distance()
+        double[] distancesByUser1 = {
+                stationInfo1.getMin5distance(),
+                stationInfo1.getMin10distance(),
+                stationInfo1.getMin15distance(),
+                stationInfo1.getMin20distance(),
+                stationInfo1.getMin25distance(),
+                stationInfo1.getMin30distance(),
+                stationInfo1.getMin35distance(),
+                stationInfo1.getMin40distance(),
+                stationInfo1.getMin45distance(),
+                stationInfo1.getMin50distance(),
+                stationInfo1.getMin55distance(),
+                stationInfo1.getMin60distance()
         };
-        int[] distancesByUser2 = {
-                (int)stationInfo2.getMin5distance(),
-                (int)stationInfo2.getMin10distance(),
-                (int)stationInfo2.getMin15distance(),
-                (int)stationInfo2.getMin20distance(),
-                (int)stationInfo2.getMin25distance(),
-                (int)stationInfo2.getMin30distance(),
-                (int)stationInfo2.getMin35distance(),
-                (int)stationInfo2.getMin40distance(),
-                (int)stationInfo2.getMin45distance(),
-                (int)stationInfo2.getMin50distance(),
-                (int)stationInfo2.getMin55distance(),
-                (int)stationInfo2.getMin60distance()
+        double[] distancesByUser2 = {
+                stationInfo2.getMin5distance(),
+                stationInfo2.getMin10distance(),
+                stationInfo2.getMin15distance(),
+                stationInfo2.getMin20distance(),
+                stationInfo2.getMin25distance(),
+                stationInfo2.getMin30distance(),
+                stationInfo2.getMin35distance(),
+                stationInfo2.getMin40distance(),
+                stationInfo2.getMin45distance(),
+                stationInfo2.getMin50distance(),
+                stationInfo2.getMin55distance(),
+                stationInfo2.getMin60distance()
         };
 
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -385,8 +377,10 @@ public class LocationService {
 
         for (int i = 0; i < 12; i++) {
             // 원을 그리기 위한 반경 계산 (단위: 도)
-            double radius1 = distancesByUser1[i] / 111.32  / 1000;
-            double radius2 = distancesByUser2[i] / 111.32  / 1000;
+//            double radius1 = distancesByUser1[i] / 111.32 ;
+//            double radius2 = distancesByUser2[i] / 111.32 ;
+            double radius1 = distancesByUser1[i];
+            double radius2 = distancesByUser2[i];
 
             // 출발지 좌표를 Point 객체로 생성
             Point point1 = geometryFactory.createPoint(startPoint1);
@@ -396,18 +390,15 @@ public class LocationService {
             Polygon circle1 = (Polygon) point1.buffer(radius1);
             Polygon circle2 = (Polygon) point2.buffer(radius2);
 
-
             // 두 원이 교차하는지 확인
             Geometry intersection = circle1.intersection(circle2);
-
-
 
             if (!intersection.isEmpty()) {
                 Set<Coordinate> intersectionCoordinatesSet = new HashSet<>();
                 Coordinate[] intersectionCoordinates = intersection.getCoordinates();
                 intersectionCoordinatesSet.addAll(Arrays.asList(intersectionCoordinates));
-                System.out.println("교차점이 있습니다. "+i+" 유저1반지름: " + distancesByUser1[i] + " m");
-                System.out.println("교차점이 있습니다. "+i+" 유저2반지름: " + distancesByUser2[i] + " m");
+                System.out.println("교차점이 있습니다. " + i + " 유저1반지름: " + distancesByUser1[i] + " km");
+                System.out.println("교차점이 있습니다. " + i + " 유저2반지름: " + distancesByUser2[i] + " km");
                 System.out.println("교차 좌표: ");
                 for (Coordinate coordinate : intersectionCoordinatesSet) {
                     System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
@@ -429,7 +420,7 @@ public class LocationService {
 
     /**
      * 무게중심좌표 구하기 version2
-     * */
+     */
     public Set<String> findCenterCoordinatesV2(Set<Coordinate> req) {
         Set<Coordinate> positions = req;
         double cnt = req.size(); // 사용자 수
@@ -448,5 +439,5 @@ public class LocationService {
         return findNearbyAreas(centerCoordinates);
     }
 
-
 }
+

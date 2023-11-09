@@ -9,6 +9,7 @@ import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
 
 import YeoksamStationExit1.locationRecommend.service.LocationService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,13 +38,17 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        Station recommendPlace = locationService.findPlaceByInfracount(placeNames);
-        List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+        List<RecommentResDto> resList = new ArrayList<>();
+        for(Station recommendPlace : stationList){
 
-        System.out.println(recommendPlace.getStationName());
-        RecommentResDto res = new RecommentResDto(recommendPlace, list);
+            List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+            RecommentResDto res = new RecommentResDto(recommendPlace, list);
+            resList.add(res);
 
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        }
+        
+        return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 
     @GetMapping("/test")

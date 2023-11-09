@@ -31,33 +31,7 @@ public class StationCrawlingController {
     private final StationTimeRepository stationTimeRepository;
 
 //    @GetMapping("/time")
-//    public ResponseEntity<?> crawling(){
-//
-//        System.setProperty("webdriver.chrome.driver",
-//                "./chromedriver.exe");
-//        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--remote-allow-origins=*");
-//        WebDriver driver = new ChromeDriver(options);
-//
-//        // 지도 서비스 페이지 열기
-//        driver.get("https://web.postman.co/workspace/My-Workspace~5fd318ca-92db-402d-8258-42ddc743b548/request/create?requestId=704b6f07-f6b9-424c-b54e-32773b6fe7da");
-//
-//        WebElement wewe = driver.findElement(By.className("public-DraftStyleDefault-ltr"));
-//
-//        wewe.sendKeys("되냐?");
-//
-//        System.out.println(wewe);
-//
-//        WebElement btn = driver.findElement(By.cssSelector("btn-group-separated>div"));
-//
-//        btn.click();
-//
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-
-//    @GetMapping("/time")
     public ResponseEntity<?> stationCrawling( int offset) {
-
 
         System.setProperty("webdriver.chrome.driver",
                 "./chromedriver.exe");
@@ -68,17 +42,17 @@ public class StationCrawlingController {
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // 지도 서비스 페이지 열기
-        driver.get("https://map.naver.com/");
+        driver.get("https://map.naver.com/p/directions/-/-/-/transit");
 
         try {
-            Thread.sleep(500); // 1000 밀리초 = 1초
+            Thread.sleep(5000); // 1000 밀리초 = 1초
         } catch (InterruptedException e) {
             e.printStackTrace(); // 예외 처리
         }
 
-        WebElement navbar = driver.findElement(By.className("iLeNBU"));
-        System.out.println(navbar);
-        navbar.click();
+//        WebElement navbar = driver.findElement(By.className("iLeNBU"));
+//        System.out.println(navbar);
+//        navbar.click();
 
         try {
             Thread.sleep(300); // 1000 밀리초 = 1초
@@ -106,13 +80,24 @@ public class StationCrawlingController {
             }
 
             inputStart.sendKeys(testSt.getStartStation());
+
             try {
                 Thread.sleep(1000); // 1000 밀리초 = 1초
             } catch (InterruptedException e) {
                 e.printStackTrace(); // 예외 처리
             }
             inputStart.sendKeys(Keys.ENTER);
+            try {
+                Thread.sleep(200); // 1000 밀리초 = 1초
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // 예외 처리
+            }
             inputStart.sendKeys(Keys.ENTER);
+            try {
+                Thread.sleep(200); // 1000 밀리초 = 1초
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // 예외 처리
+            }
             inputStart.sendKeys(Keys.ENTER);
 
             try {
@@ -138,7 +123,17 @@ public class StationCrawlingController {
                 e.printStackTrace(); // 예외 처리
             }
             inputEnd.sendKeys(Keys.ENTER);
+            try {
+                Thread.sleep(200); // 1000 밀리초 = 1초
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // 예외 처리
+            }
             inputEnd.sendKeys(Keys.ENTER);
+            try {
+                Thread.sleep(200); // 1000 밀리초 = 1초
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // 예외 처리
+            }
             inputEnd.sendKeys(Keys.ENTER);
 
             try {

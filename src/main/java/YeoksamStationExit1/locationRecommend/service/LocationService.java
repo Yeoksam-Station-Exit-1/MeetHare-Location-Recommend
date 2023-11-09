@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.locationtech.jts.geom.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -134,7 +136,7 @@ public class LocationService {
         return findNearbyAreas(centerCoordinates);
     }
 
-    public Station findPlaceByInfracount(Set<String> placeNames) {
+    public List<Station> findPlaceByInfracount(Set<String> placeNames) {
 
         // Iterator<String> iter = placeNames.iterator();
         // List<String> test = new ArrayList<>();
@@ -145,13 +147,20 @@ public class LocationService {
 
         // 인프라 순으로 가져오기
         List<Station> list = locationRepository.findByInfraCount(placeNames);
+        if(list.size() <= 3){
+            return list;
+        }else{
+            List<Station> stationList = new ArrayList<>(list.subList(0, 3));
+            return stationList;
+        }
+
         /*
          * 차후 인프라 많은 곳, 적은 곳 선택하여 목적지 정하는 기능을 위해
          * infracount 순으로 리스트에 넣어 둠
          * 1차 배포를 위해서 가장 infracount가 많은 장소를 리턴
          *
          */
-        return list.get(0);
+
 
     }
 
@@ -161,6 +170,7 @@ public class LocationService {
         List<TransPathPerUserDto> list = new ArrayList<>();
 
         for (FindCenterCoordinatesReqDto rq : req) {
+
             RestTemplate restTemplate = new RestTemplate();
 
             String apiUrl = odsayurl + "?lang=0&output=json"
@@ -173,9 +183,21 @@ public class LocationService {
 
             URI uri = URI.create(apiUrl);
             String response = restTemplate.getForObject(uri, String.class);
+
+            JSONObject jObject = new JSONObject(response);
+
+            JSONObject result = jObject.getJSONObject("result");
+            JSONArray path = result.getJSONArray("path");
+            int min = Integer.MAX_VALUE;
+            for(int i = 0; i < path.length(); i++){
+                int temp = path.getJSONObject(i).getJSONObject("info").getInt("totalTime");
+                min = Math.min(min, temp);
+            }
+
             TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
-                    response);
+                    response, min);
             list.add(tpu);
+
         }
 
         return list;
@@ -438,6 +460,8 @@ public class LocationService {
 
         return findNearbyAreas(centerCoordinates);
     }
-
+    public List<String> findAllStation(){
+        return locationRepository.findAllStationName();
+    }
 }
 

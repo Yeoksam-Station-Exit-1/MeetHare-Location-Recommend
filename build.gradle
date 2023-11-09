@@ -42,6 +42,13 @@ dependencies {
 	//jts 사용을 위한 추가
 	// https://mvnrepository.com/artifact/org.locationtech.jts/jts-core
 	implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
+  
+	//지하철 역 간 이동 시간을 측정하기 위한 셀레니움
+	implementation 'org.seleniumhq.selenium:selenium-java:4.14.1'
+
+	// json 가공
+	implementation 'org.json:json:20230227'
+
 
 }
 

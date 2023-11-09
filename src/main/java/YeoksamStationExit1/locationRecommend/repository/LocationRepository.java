@@ -13,6 +13,9 @@ public interface LocationRepository extends JpaRepository<Station, Integer> {
 
     List<Station> findAll();
 
+    @Query("SELECT s.stationName FROM Station s")
+    List<String> findAllStationName();
+
     @Query("SELECT s FROM Station s WHERE s.stationName IN :stationNames ORDER BY s.infraCount DESC")
     List<Station> findByInfraCount(@Param("stationNames") Set<String> placeNames);
 

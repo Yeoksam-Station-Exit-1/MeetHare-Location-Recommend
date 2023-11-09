@@ -29,4 +29,6 @@ public class Station {
 
     @Column(name = "infra_count")
     private int infraCount;
+
+
 }

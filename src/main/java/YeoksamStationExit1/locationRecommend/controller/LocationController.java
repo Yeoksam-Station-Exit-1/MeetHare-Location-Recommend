@@ -1,5 +1,6 @@
 package YeoksamStationExit1.locationRecommend.controller;
 
+import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
@@ -68,4 +69,29 @@ public class LocationController {
         List<FindMyStationRespDto> stationList = locationService.findMyStation(stationName);
         return new ResponseEntity<>(stationList, HttpStatus.OK);
     }
+
+    /**
+     * 특정 좌표 기준 시간별 이동가능한 평균거리 구하는 메서드 -> db저장용
+     * */
+    public ResponseEntity<?> findAvgDistanceByTime() {
+        double avgDistance = locationService.findAvgDistanceByTime();
+        System.out.println("avgDistance " + avgDistance);
+        locationService.selectAll();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 특정 좌표 별 이동가능한 등시선도 확인 + 교차되는 좌표를 구하는 메서드
+     * */
+    @PostMapping("/moveableArea")
+    public ResponseEntity<?> getMoveableArea(@RequestBody List<FindAvgDistanceReqDto> req) {
+        Set<String> stationList = locationService.checkMovableArea(req);
+        for ( String station: stationList
+        ) {
+            System.out.println(station);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 }

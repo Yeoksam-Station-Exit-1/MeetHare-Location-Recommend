@@ -49,6 +49,9 @@ dependencies {
 	// json 가공
 	implementation 'org.json:json:20230227'
 
+	//websocket 사용을 위한 추가
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
 
 }
 

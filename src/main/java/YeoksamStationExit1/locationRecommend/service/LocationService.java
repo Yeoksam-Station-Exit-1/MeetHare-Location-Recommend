@@ -1,14 +1,20 @@
 package YeoksamStationExit1.locationRecommend.service;
 
+import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetAvgDistanceRespDto;
+import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
 import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
 import YeoksamStationExit1.locationRecommend.repository.QLocationRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.locationtech.jts.geom.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +26,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import java.awt.geom.Point2D;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LocationService {
 
     private final LocationRepository locationRepository;
@@ -44,6 +55,11 @@ public class LocationService {
     @Value("${odsay.key}")
     private String odsaykey;
     private String odsayurl = "https://api.odsay.com/v1/api/searchPubTransPathT";
+
+    @Value("${map.key}")
+    private String mapkey;
+    private String mapurl = "https://api.mapbox.com/isochrone/v1/mapbox/driving-traffic";
+    private List<GetStationCoordinateResDto> list;
 
     /**
      * [2] 중심좌표 기준 가까운 지하철 역을 구하는 메서드
@@ -143,7 +159,7 @@ public class LocationService {
          * 차후 인프라 많은 곳, 적은 곳 선택하여 목적지 정하는 기능을 위해
          * infracount 순으로 리스트에 넣어 둠
          * 1차 배포를 위해서 가장 infracount가 많은 장소를 리턴
-         * 
+         *
          */
 
 
@@ -151,7 +167,7 @@ public class LocationService {
 
     @Async
     public List<TransPathPerUserDto> searchPubTransPath(List<FindCenterCoordinatesReqDto> req,
-            Station recommendPlace) {
+                                                        Station recommendPlace) {
 
         List<TransPathPerUserDto> list = new ArrayList<>();
 
@@ -217,7 +233,251 @@ public class LocationService {
         return stationList;
     }
 
+    /**
+     * db 좌표를 사용해 출발지 좌표와의 거리를 구하는 메서드 [1]
+     * api 요청 형식 : 기본url/이동수단/경도,위도?contours_minutes=이동시간&access_token=토큰A&generalize=윤곽선단순화(max=500)
+     */
+    public double findAvgDistanceByTime() {
+        double distance = 0.0;
+        List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
+        for (GetStationCoordinateResDto dto : list) {
+            int stationId = dto.getStationId();
+            double startLong = dto.getLongitude();
+            double startLat = dto.getLatitude();
+
+            String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
+            distance = calAvgDistance(jsonResponse, startLong, startLat); //출발지와 모든 등시선도좌표상의 거리를 비표하여 평균거리를 구하는 메서드
+
+            System.out.println("distance " + distance);
+            if (Double.isNaN(distance)) {
+                distance = 0.0; // 또는 다른 기본값으로 설정
+            }
+            QLocationRepository.updateDistanceColumn(stationId, distance);
+
+            try {
+                // 요청 간격을 조절하기 위한 딜레이
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return distance;
+    }//
+
+    /**
+     * api 요청을 전송하여 등시선도 좌표를 받아오는 메서드 [1]
+     * parameter: 출발지의 위경도 좌표
+     * return: 응답된 json
+     */
+    public String getMapByTime(double startLong, double startLat) {
+        RestTemplate restTemplate = new RestTemplate();
+        URI targetUrl = UriComponentsBuilder
+                .fromUriString(mapurl) // 기본 url
+                .path("/{origin},{destination}")
+                .queryParam("contours_minutes", "55") // 이동시간
+                .queryParam("access_token", mapkey) // access token
+                .queryParam("generalize", 500) //
+                .buildAndExpand(startLong, startLat)
+                .encode(StandardCharsets.UTF_8) // 인코딩
+                .toUri();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
+
+        String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
+        System.out.println(jsonResponse);
+        return jsonResponse;
+    }
+
+    /**
+     * 출발지와 모든 등시선조 좌표 사이의 거리를 비교하여 평균거리를 구하는 메서드[2]
+     */
+    public double calAvgDistance(String jsonResponse, double startLong, double startLat) {
+        // Jackson ObjectMapper 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        double distance = 0.0;
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonResponse);// JSON 문자열을 JsonNode로 파싱
+
+            JsonNode coordinatesNode = jsonNode // "features" 배열에서 "coordinates" 배열 추출
+                    .path("features")
+                    .get(0) // 첫 번째 요소
+                    .path("geometry")
+                    .path("coordinates");
+
+            // 좌표 값을 담을 리스트 생성
+            Set<List<Double>> coordinatesList = new HashSet<>();
+
+            double sumDistanceOfPoint = 0.0; //등시선도 좌표개수와 출발지사이의 거리 합
+            // 좌표 배열을 리스트에 추가
+            for (JsonNode coord : coordinatesNode) {
+                double endLong = coord.get(0).asDouble(); //경도
+                double endLat = coord.get(1).asDouble(); //위도
+                sumDistanceOfPoint += calculateFlatDistance(startLat, startLong, endLat, endLong);
+                List<Double> point = Arrays.asList(endLat, endLong); //위도경도순서
+                coordinatesList.add(point);
+            }
+            // 좌표 리스트 출력
+            double pointCnt = coordinatesList.size(); //등시선도좌표개수
+            double avgDistance = (sumDistanceOfPoint / pointCnt) * 1000;
+            DecimalFormat df = new DecimalFormat("#.######");
+            String formattedNumber = df.format(avgDistance);
+            distance = Double.parseDouble(formattedNumber);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return distance;
+    }
+
+    /**
+     * 출발지와 특정 등시선도 좌표사이의 거리를 구하는 메서드[3]
+     */
+    public double calculateFlatDistance(double lat1, double lon1, double lat2, double lon2) {
+        // 평면 거리를 계산할 때 사용할 상수 (단위: km)
+        final double kmPerDegreeLat = 111.32;
+        final double kmPerDegreeLon = 111.32;
+
+        // 위도 및 경도 간의 차이를 계산
+        double latDiff = Math.abs(lat2 - lat1);
+        double lonDiff = Math.abs(lon2 - lon1);
+
+        // 평면 거리 계산
+        double flatDistance = Math.sqrt(Math.pow(latDiff * kmPerDegreeLat, 2) + Math.pow(lonDiff * kmPerDegreeLon, 2));
+
+        return flatDistance;
+    }
+
+    public void selectAll() {
+        List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
+
+        int id = list.get(0).getStationId();
+        System.out.println(id);
+        double lat = list.get(0).getLatitude();
+        System.out.println(lat);
+        double log = list.get(0).getLongitude();
+        System.out.println(log);
+
+        QLocationRepository.updateDistanceColumn(id, 3);
+
+//        for (GetStationCoordinateResDto dto : list ){
+//            System.out.println(dto.getStationId());
+//            System.out.println(dto.getLatitude());
+//            System.out.println(dto.getLongitude());
+//        }
+    }
+
+    /**
+     * db등시선도 기준 이동가능한 범위 체크
+     */
+    public Set<String> checkMovableArea(List<FindAvgDistanceReqDto> req) {
+
+        //db데이터 접근을 위한 쿼리 생성
+        GetAvgDistanceRespDto stationInfo1 = QLocationRepository.findByStationId(req.get(0).getStationId());
+        GetAvgDistanceRespDto stationInfo2 = QLocationRepository.findByStationId(req.get(1).getStationId());
+
+        //출발지 좌표
+        Coordinate startPoint1 = new Coordinate(req.get(0).getLongitude(), req.get(0).getLatitude());
+        Coordinate startPoint2 = new Coordinate(req.get(0).getLongitude(), req.get(1).getLatitude());
+
+        // 거리 칼럼 설정
+        double[] distancesByUser1 = {
+                stationInfo1.getMin5distance(),
+                stationInfo1.getMin10distance(),
+                stationInfo1.getMin15distance(),
+                stationInfo1.getMin20distance(),
+                stationInfo1.getMin25distance(),
+                stationInfo1.getMin30distance(),
+                stationInfo1.getMin35distance(),
+                stationInfo1.getMin40distance(),
+                stationInfo1.getMin45distance(),
+                stationInfo1.getMin50distance(),
+                stationInfo1.getMin55distance(),
+                stationInfo1.getMin60distance()
+        };
+        double[] distancesByUser2 = {
+                stationInfo2.getMin5distance(),
+                stationInfo2.getMin10distance(),
+                stationInfo2.getMin15distance(),
+                stationInfo2.getMin20distance(),
+                stationInfo2.getMin25distance(),
+                stationInfo2.getMin30distance(),
+                stationInfo2.getMin35distance(),
+                stationInfo2.getMin40distance(),
+                stationInfo2.getMin45distance(),
+                stationInfo2.getMin50distance(),
+                stationInfo2.getMin55distance(),
+                stationInfo2.getMin60distance()
+        };
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Set<String> stationList = new HashSet<>();
+
+        for (int i = 0; i < 12; i++) {
+            // 원을 그리기 위한 반경 계산 (단위: 도)
+//            double radius1 = distancesByUser1[i] / 111.32 ;
+//            double radius2 = distancesByUser2[i] / 111.32 ;
+            double radius1 = distancesByUser1[i];
+            double radius2 = distancesByUser2[i];
+
+            // 출발지 좌표를 Point 객체로 생성
+            Point point1 = geometryFactory.createPoint(startPoint1);
+            Point point2 = geometryFactory.createPoint(startPoint2);
+
+            // 원을 그리기 위한 Polygon 생성
+            Polygon circle1 = (Polygon) point1.buffer(radius1);
+            Polygon circle2 = (Polygon) point2.buffer(radius2);
+
+            // 두 원이 교차하는지 확인
+            Geometry intersection = circle1.intersection(circle2);
+
+            if (!intersection.isEmpty()) {
+                Set<Coordinate> intersectionCoordinatesSet = new HashSet<>();
+                Coordinate[] intersectionCoordinates = intersection.getCoordinates();
+                intersectionCoordinatesSet.addAll(Arrays.asList(intersectionCoordinates));
+                System.out.println("교차점이 있습니다. " + i + " 유저1반지름: " + distancesByUser1[i] + " km");
+                System.out.println("교차점이 있습니다. " + i + " 유저2반지름: " + distancesByUser2[i] + " km");
+                System.out.println("교차 좌표: ");
+                for (Coordinate coordinate : intersectionCoordinatesSet) {
+                    System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
+                }
+                stationList = findCenterCoordinatesV2(intersectionCoordinatesSet);
+                break;
+            } else {
+                System.out.println("교차점이 없습니다. 반지름: " + distancesByUser1[i] + " km");
+            }
+
+
+        }//for
+
+
+        return stationList;
+
+
+    }
+
+    /**
+     * 무게중심좌표 구하기 version2
+     */
+    public Set<String> findCenterCoordinatesV2(Set<Coordinate> req) {
+        Set<Coordinate> positions = req;
+        double cnt = req.size(); // 사용자 수
+        double sumOfLong = 0; // 경도
+        double sumOfLat = 0; // 위도
+        for (Coordinate coordinate : positions) {
+            sumOfLong += coordinate.getX();
+            sumOfLat += coordinate.getY();
+        }
+        double[] centerCoordinates = new double[2];
+        centerCoordinates[0] = Math.round((sumOfLong / cnt) * 100000000.0) / 100000000.0; // 경도
+        centerCoordinates[1] = Math.round((sumOfLat / cnt) * 100000000.0) / 100000000.0; // 위도
+        System.out.println("중심경도 : " + centerCoordinates[0]);
+        System.out.println("중심위도 : " + centerCoordinates[1]);
+
+        return findNearbyAreas(centerCoordinates);
+    }
     public List<String> findAllStation(){
         return locationRepository.findAllStationName();
     }
 }
+

@@ -38,6 +38,18 @@ dependencies {
 	implementation 'javax.annotation:javax.annotation-api:1.3.2'
 	implementation 'javax.persistence:javax.persistence-api:2.2'
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0'
+
+	//jts 사용을 위한 추가
+	// https://mvnrepository.com/artifact/org.locationtech.jts/jts-core
+	implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
+  
+	//지하철 역 간 이동 시간을 측정하기 위한 셀레니움
+	implementation 'org.seleniumhq.selenium:selenium-java:4.14.1'
+
+	// json 가공
+	implementation 'org.json:json:20230227'
+
+
 }
 
 // (4) queryDSL 추가 : QueryDSL 빌드 옵션

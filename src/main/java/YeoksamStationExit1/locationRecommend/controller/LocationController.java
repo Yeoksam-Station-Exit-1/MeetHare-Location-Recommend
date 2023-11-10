@@ -1,5 +1,6 @@
 package YeoksamStationExit1.locationRecommend.controller;
 
+import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
@@ -9,9 +10,11 @@ import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
 
 import YeoksamStationExit1.locationRecommend.service.LocationService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LocationController {
 
-    @Autowired
     private final LocationService locationService;
 
     @PostMapping("/middlespot")
@@ -38,13 +40,20 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        Station recommendPlace = locationService.findPlaceByInfracount(placeNames);
-        List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+        List<RecommentResDto> resList = new ArrayList<>();
+        for(Station recommendPlace : stationList){
 
-        System.out.println(recommendPlace.getStationName());
-        RecommentResDto res = new RecommentResDto(recommendPlace, list);
+            List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+            System.out.println("!!!!");
 
-        return new ResponseEntity<>(res, HttpStatus.OK);
+            RecommentResDto res = new RecommentResDto(recommendPlace, list);
+            resList.add(res);
+            TimeUnit.SECONDS.sleep(1);
+
+        }
+        
+        return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 
     @GetMapping("/test")
@@ -64,4 +73,29 @@ public class LocationController {
         List<FindMyStationRespDto> stationList = locationService.findMyStation(stationName);
         return new ResponseEntity<>(stationList, HttpStatus.OK);
     }
+
+    /**
+     * 특정 좌표 기준 시간별 이동가능한 평균거리 구하는 메서드 -> db저장용
+     * */
+    public ResponseEntity<?> findAvgDistanceByTime() {
+        double avgDistance = locationService.findAvgDistanceByTime();
+        System.out.println("avgDistance " + avgDistance);
+        locationService.selectAll();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 특정 좌표 별 이동가능한 등시선도 확인 + 교차되는 좌표를 구하는 메서드
+     * */
+    @PostMapping("/moveableArea")
+    public ResponseEntity<?> getMoveableArea(@RequestBody List<FindAvgDistanceReqDto> req) {
+        Set<String> stationList = locationService.checkMovableArea(req);
+        for ( String station: stationList
+        ) {
+            System.out.println(station);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 }

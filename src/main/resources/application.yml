@@ -13,7 +13,8 @@ spring:
 kakao:
   key: ${kakaokey}
 
-odsay:
+odsay: 
   key: ${odsaykey}
 
-
+map:
+  key: ${mapkey}

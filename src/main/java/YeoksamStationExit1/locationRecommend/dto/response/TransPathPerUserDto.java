@@ -14,4 +14,6 @@ public class TransPathPerUserDto {
     Double longitude;
     Double latitude;
     String transPath;
+    int minTime;
+    String minPath;
 }

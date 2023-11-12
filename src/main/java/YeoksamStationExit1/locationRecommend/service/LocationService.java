@@ -78,7 +78,7 @@ public class LocationService {
                 .queryParam("category_group_code", "SW8") // 카테고리설정(지하철)
                 .queryParam("x", longitude) // 경도
                 .queryParam("y", latitude) // 위도
-                .queryParam("radius", 1500) // 거리 m단위
+                .queryParam("radius", 3000) // 거리 m단위
                 .build()
                 .encode(StandardCharsets.UTF_8) // 인코딩
                 .toUri();

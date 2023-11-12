@@ -13,13 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class RealTimeController {
 
-    //    @GetMapping("/realtime")
-//    public String chatGET(){
-//
-//        log.info("@RealTimeController, realtime GET()");
-//
-//        return "realtime";
-//    }
     private final SimpMessageSendingOperations simpMessageSendingOperations;
 
     /*
@@ -30,6 +23,7 @@ public class RealTimeController {
     @MessageMapping("/hello")
     public void message(Message message) {
         log.info("message.getChannelId : "+ message.getChannelId());
+        log.info("message.type : "+ message.getType());
         log.info("message : "+ message.getData() );
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
     }

@@ -66,28 +66,39 @@ public class LocationService {
      * 외부 api (kakao api) 를 사용하여 목록을 받아옴.
      */
     public Set<String> findNearbyAreas(double[] centerCoordinates) {
-        // 중심좌표
-        double longitude = centerCoordinates[0];// 경도
-        double latitude = centerCoordinates[1];// 위도
+        double longitude = centerCoordinates[0];
+        double latitude = centerCoordinates[1];
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", "KakaoAK " + kakaokey); // Authorization 설정
+        httpHeaders.set("Authorization", "KakaoAK " + kakaokey);
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-        URI targetUrl = UriComponentsBuilder
-                .fromUriString(kakaourl) // 기본 url
-                .queryParam("category_group_code", "SW8") // 카테고리설정(지하철)
-                .queryParam("x", longitude) // 경도
-                .queryParam("y", latitude) // 위도
-                .queryParam("radius", 1500) // 거리 m단위
+
+        // 반복문을 통해 요청 시도
+        for (int radius = 1500; radius <= 5000; radius += 500) {
+            URI targetUrl = UriComponentsBuilder
+                .fromUriString(kakaourl)
+                .queryParam("category_group_code", "SW8")
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("radius", radius)
                 .build()
-                .encode(StandardCharsets.UTF_8) // 인코딩
+                .encode(StandardCharsets.UTF_8)
                 .toUri();
 
-        // GetForObject는 헤더를 정의할 수 없음
-        ResponseEntity<Map> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, Map.class);
-        return getStationNames(result);
+            ResponseEntity<Map> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, Map.class);
+
+            // getStationNames 메소드에서 null 체크
+            Set<String> stationNames = getStationNames(result);
+            if (stationNames != null) {
+                return stationNames;
+            }
+        }
+
+        // 모든 시도가 실패한 경우 null 반환
+        return null;
     }
+
 
     /**
      * [3] api 를 사용하여 받아온 data 중 필요한 데이터만을 가져옴

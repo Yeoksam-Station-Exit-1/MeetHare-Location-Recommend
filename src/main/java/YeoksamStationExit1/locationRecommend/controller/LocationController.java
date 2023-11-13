@@ -52,7 +52,7 @@ public class LocationController {
             TimeUnit.SECONDS.sleep(1);
 
         }
-        
+
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 

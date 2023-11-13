@@ -2,7 +2,7 @@ package YeoksamStationExit1.locationRecommend.controller;
 
 import YeoksamStationExit1.locationRecommend.entity.StationTime;
 import YeoksamStationExit1.locationRecommend.repository.StationTimeRepository;
-import YeoksamStationExit1.locationRecommend.service.LocationService;
+//import YeoksamStationExit1.locationRecommend.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -27,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StationCrawlingController {
 
-    private final LocationService locationService;
+//    private final LocationService locationService;
     private final StationTimeRepository stationTimeRepository;
 
 //    @GetMapping("/time")

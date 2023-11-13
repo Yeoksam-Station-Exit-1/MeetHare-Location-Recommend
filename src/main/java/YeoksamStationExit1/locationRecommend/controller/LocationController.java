@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +45,14 @@ public class LocationController {
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+            System.out.println("!!!!");
+
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
+            TimeUnit.SECONDS.sleep(1);
 
         }
-        
+
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 

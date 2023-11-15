@@ -3,6 +3,7 @@ package YeoksamStationExit1.locationRecommend.controller;
 import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
+import YeoksamStationExit1.locationRecommend.dto.request.MeetingPlaceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
@@ -90,11 +91,11 @@ public class LocationController {
     }
 
     @PostMapping("/meetingPlace")
-    public ResponseEntity<?> getMeetingPlace(@RequestBody List<FindCenterCoordinatesReqDto> req, int stationNumber){
+    public ResponseEntity<?> getMeetingPlace(@RequestBody MeetingPlaceReqDto mpDto){
+        System.out.println(12341234);
+        Station recommendPlace = locationService.getStationByNumber(mpDto.getStationNumber());
 
-        Station recommendPlace = locationService.getStationByNumber(stationNumber);
-
-        List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+        List<TransPathPerUserDto> list = locationService.searchPubTransPath(mpDto.getLocations(), recommendPlace);
         RecommentResDto res = new RecommentResDto(recommendPlace, list);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }

@@ -46,7 +46,6 @@ public class LocationController {
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
-            System.out.println("!!!!");
 
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
@@ -57,13 +56,6 @@ public class LocationController {
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> testmoe() {
-        System.out.println("test!!!!");
-        String str = "meethare";
-
-        return new ResponseEntity<>(str, HttpStatus.OK);
-    }
 
     /**
      * 검색어 기반 검색어가 포함된 역 이름을 찾아 좌표값을 반환하는 메서드
@@ -80,7 +72,6 @@ public class LocationController {
      * */
     public ResponseEntity<?> findAvgDistanceByTime() {
         double avgDistance = locationService.findAvgDistanceByTime();
-        System.out.println("avgDistance " + avgDistance);
         locationService.selectAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }

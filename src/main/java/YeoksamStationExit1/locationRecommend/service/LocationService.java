@@ -135,22 +135,12 @@ public class LocationService {
         double[] centerCoordinates = new double[2];
         centerCoordinates[0] = Math.round((sumOfLong / cnt) * 100000000.0) / 100000000.0; // 경도
         centerCoordinates[1] = Math.round((sumOfLat / cnt) * 100000000.0) / 100000000.0; // 위도
-        System.out.println("중심경도 : " + centerCoordinates[0]);
-        System.out.println("중심위도 : " + centerCoordinates[1]);
 
         return findNearbyAreas(centerCoordinates);
     }
 
     public List<Station> findPlaceByInfracount(Set<String> placeNames) {
 
-        // Iterator<String> iter = placeNames.iterator();
-        // List<String> test = new ArrayList<>();
-
-        // while (iter.hasNext()) {
-        // test.add(iter.next());
-        // }
-
-        // 인프라 순으로 가져오기
         List<Station> list = locationRepository.findByInfraCount(placeNames);
         if(list.size() <= 3){
             return list;
@@ -158,13 +148,6 @@ public class LocationService {
             List<Station> stationList = new ArrayList<>(list.subList(0, 3));
             return stationList;
         }
-
-        /*
-         * 차후 인프라 많은 곳, 적은 곳 선택하여 목적지 정하는 기능을 위해
-         * infracount 순으로 리스트에 넣어 둠
-         * 1차 배포를 위해서 가장 infracount가 많은 장소를 리턴
-         *
-         */
 
 
     }
@@ -176,7 +159,6 @@ public class LocationService {
         List<TransPathPerUserDto> list = new ArrayList<>();
 
         for (FindCenterCoordinatesReqDto rq : req) {
-            System.out.println(rq.toString());
             RestTemplate restTemplate = new RestTemplate();
 
             String apiUrl = odsayurl + "?lang=0&output=json"
@@ -190,11 +172,7 @@ public class LocationService {
             URI uri = URI.create(apiUrl);
 
             String response = restTemplate.getForObject(uri, String.class);
-            System.out.println(response);
-            System.out.println("**********************************************");
-            System.out.println();
-            System.out.println();
-            System.out.println();
+
             JSONObject jObject = new JSONObject(response);
 
             JSONObject result = jObject.getJSONObject("result");
@@ -250,7 +228,7 @@ public class LocationService {
             String jsonResponse = getMapByTime(startLong, startLat); //api 요청을 전송하여 등시선도 좌표를 받아오는 메서드
             distance = calAvgDistance(jsonResponse, startLong, startLat); //출발지와 모든 등시선도좌표상의 거리를 비표하여 평균거리를 구하는 메서드
 
-            System.out.println("distance " + distance);
+
             if (Double.isNaN(distance)) {
                 distance = 0.0; // 또는 다른 기본값으로 설정
             }
@@ -286,7 +264,7 @@ public class LocationService {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
 
         String jsonResponse = responseEntity.getBody();// JSON 응답 데이터를 문자열로 설정
-        System.out.println(jsonResponse);
+
         return jsonResponse;
     }
 
@@ -354,19 +332,12 @@ public class LocationService {
         List<GetStationCoordinateResDto> list = QLocationRepository.findAll();
 
         int id = list.get(0).getStationId();
-        System.out.println(id);
         double lat = list.get(0).getLatitude();
-        System.out.println(lat);
         double log = list.get(0).getLongitude();
-        System.out.println(log);
+
 
         QLocationRepository.updateDistanceColumn(id, 3);
 
-//        for (GetStationCoordinateResDto dto : list ){
-//            System.out.println(dto.getStationId());
-//            System.out.println(dto.getLatitude());
-//            System.out.println(dto.getLongitude());
-//        }
     }
 
     /**
@@ -437,9 +408,7 @@ public class LocationService {
                 Set<Coordinate> intersectionCoordinatesSet = new HashSet<>();
                 Coordinate[] intersectionCoordinates = intersection.getCoordinates();
                 intersectionCoordinatesSet.addAll(Arrays.asList(intersectionCoordinates));
-                System.out.println("교차점이 있습니다. " + i + " 유저1반지름: " + distancesByUser1[i] + " km");
-                System.out.println("교차점이 있습니다. " + i + " 유저2반지름: " + distancesByUser2[i] + " km");
-                System.out.println("교차 좌표: ");
+
                 for (Coordinate coordinate : intersectionCoordinatesSet) {
                     System.out.println("Latitude: " + coordinate.y + ", Longitude: " + coordinate.x);
                 }
@@ -473,8 +442,7 @@ public class LocationService {
         double[] centerCoordinates = new double[2];
         centerCoordinates[0] = Math.round((sumOfLong / cnt) * 100000000.0) / 100000000.0; // 경도
         centerCoordinates[1] = Math.round((sumOfLat / cnt) * 100000000.0) / 100000000.0; // 위도
-        System.out.println("중심경도 : " + centerCoordinates[0]);
-        System.out.println("중심위도 : " + centerCoordinates[1]);
+
 
         return findNearbyAreas(centerCoordinates);
     }
@@ -485,7 +453,7 @@ public class LocationService {
     public List<Station> findCenterCoordinatesV3(List<FindCenterCoordinatesReqDto> req){
 
         int time = 5;
-        System.out.println("온다!!!!!!");
+
         while(true){
             List<List<Station>> resultList = new ArrayList<>();
 
@@ -493,7 +461,7 @@ public class LocationService {
                 resultList.add(yourRepositoryMethod(rq, time));
             }
             List<Station> commonValues = findCommonValues(resultList);
-            System.out.println(commonValues.toString());
+
             if(commonValues.size() >= 3){
                 return commonValues;
             }

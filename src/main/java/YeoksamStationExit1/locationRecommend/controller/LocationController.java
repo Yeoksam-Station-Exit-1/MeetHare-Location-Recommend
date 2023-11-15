@@ -46,11 +46,14 @@ public class LocationController {
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+            System.out.println("!!!!");
+
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
             TimeUnit.SECONDS.sleep(1);
+
         }
-        
+
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 

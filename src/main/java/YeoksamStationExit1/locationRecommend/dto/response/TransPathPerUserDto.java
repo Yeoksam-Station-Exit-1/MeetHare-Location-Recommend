@@ -15,4 +15,5 @@ public class TransPathPerUserDto {
     Double latitude;
     String transPath;
     int minTime;
+    String minPath;
 }

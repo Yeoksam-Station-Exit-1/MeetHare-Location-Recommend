@@ -25,6 +25,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -168,13 +169,14 @@ public class LocationService {
 
     }
 
+    @Async
     public List<TransPathPerUserDto> searchPubTransPath(List<FindCenterCoordinatesReqDto> req,
                                                         Station recommendPlace) {
 
         List<TransPathPerUserDto> list = new ArrayList<>();
 
         for (FindCenterCoordinatesReqDto rq : req) {
-
+            System.out.println(rq.toString());
             RestTemplate restTemplate = new RestTemplate();
 
             String apiUrl = odsayurl + "?lang=0&output=json"
@@ -186,20 +188,33 @@ public class LocationService {
                     + URLEncoder.encode(odsaykey, StandardCharsets.UTF_8);
 
             URI uri = URI.create(apiUrl);
-            String response = restTemplate.getForObject(uri, String.class);
 
+            String response = restTemplate.getForObject(uri, String.class);
+            System.out.println(response);
+            System.out.println("**********************************************");
+            System.out.println();
+            System.out.println();
+            System.out.println();
             JSONObject jObject = new JSONObject(response);
 
             JSONObject result = jObject.getJSONObject("result");
             JSONArray path = result.getJSONArray("path");
             int min = Integer.MAX_VALUE;
+            JSONArray minArr = new JSONArray();
             for(int i = 0; i < path.length(); i++){
+
                 int temp = path.getJSONObject(i).getJSONObject("info").getInt("totalTime");
+                JSONArray arr = path.getJSONObject(i).getJSONArray("subPath");
+
+                if(temp < min){
+                    min = temp;
+                    minArr = arr;
+                }
                 min = Math.min(min, temp);
             }
 
             TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
-                    response, min);
+                    response, min, minArr.toString());
 
             list.add(tpu);
 

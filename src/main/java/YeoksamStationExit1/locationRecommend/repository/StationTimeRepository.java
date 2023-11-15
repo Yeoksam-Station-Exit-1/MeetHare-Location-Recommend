@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public interface StationTimeRepository extends JpaRepository<StationTime, Integer> {
 
-    @Query(value = "SELECT * FROM station_time WHERE status = 'N' LIMIT 20 OFFSET ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM station_time WHERE status = 'N' LIMIT 15 OFFSET ?1", nativeQuery = true)
     List<StationTime> findStationTimeByIntGreaterThanEqual(@Param("offset") int offset);
 
     @Modifying

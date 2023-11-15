@@ -21,7 +21,7 @@
 //    @Scheduled(fixedRate = 300000)
 //    public void performCrawling1() {
 //
-//        stationCrawlingController.stationCrawling(50);
+//        stationCrawlingController.stationCrawling(0);
 //
 //    }
 //
@@ -30,7 +30,7 @@
 //    @Scheduled(fixedRate = 300000)
 //    public void performCrawling2() {
 //
-//        stationCrawlingController.stationCrawling(100);
+//        stationCrawlingController.stationCrawling(20);
 //
 //    }
 //
@@ -38,43 +38,43 @@
 ////    @Scheduled(cron = "* */5 7-22 * * *")
 //    @Scheduled(fixedRate = 300000)
 //    public void performCrawling3() {
-//        stationCrawlingController.stationCrawling(150);
+//        stationCrawlingController.stationCrawling(40);
 //    }
 //
 //    @Async
 ////    @Scheduled(cron = "* */5 7-22 * * *")
 //    @Scheduled(fixedRate = 300000)
 //    public void performCrawling4() {
-//        stationCrawlingController.stationCrawling(200);
+//        stationCrawlingController.stationCrawling(60);
 //    }
 //
-//    @Async
-////    @Scheduled(cron = "* */5 7-22 * * *")
-//    @Scheduled(fixedRate = 300000)
-//    public void performCrawling5() {
-//        stationCrawlingController.stationCrawling(250);
-//    }
-//
-//    @Async
-////    @Scheduled(cron = "* */5 7-22 * * *")
-//    @Scheduled(fixedRate = 300000)
-//    public void performCrawling6() {
-//        stationCrawlingController.stationCrawling(300);
-//    }
-//
-//    @Async
-////    @Scheduled(cron = "* */5 7-22 * * *")
-//    @Scheduled(fixedRate = 300000)
-//    public void performCrawling7() {
-//        stationCrawlingController.stationCrawling(350);
-//    }
-//
-//    @Async
-////    @Scheduled(cron = "* */5 7-22 * * *")
-//    @Scheduled(fixedRate = 300000)
-//    public void performCrawling8() {
-//        stationCrawlingController.stationCrawling(400);
-//    }
+////    @Async
+//////    @Scheduled(cron = "* */5 7-22 * * *")
+////    @Scheduled(fixedRate = 300000)
+////    public void performCrawling5() {
+////        stationCrawlingController.stationCrawling(250);
+////    }
+////
+////    @Async
+//////    @Scheduled(cron = "* */5 7-22 * * *")
+////    @Scheduled(fixedRate = 300000)
+////    public void performCrawling6() {
+////        stationCrawlingController.stationCrawling(300);
+////    }
+////
+////    @Async
+//////    @Scheduled(cron = "* */5 7-22 * * *")
+////    @Scheduled(fixedRate = 300000)
+////    public void performCrawling7() {
+////        stationCrawlingController.stationCrawling(350);
+////    }
+////
+////    @Async
+//////    @Scheduled(cron = "* */5 7-22 * * *")
+////    @Scheduled(fixedRate = 300000)
+////    public void performCrawling8() {
+////        stationCrawlingController.stationCrawling(400);
+////    }
 //
 ////    @Async
 ////    @Scheduled(fixedDelay = 300000) // 5분마다 실행 (밀리초 단위)

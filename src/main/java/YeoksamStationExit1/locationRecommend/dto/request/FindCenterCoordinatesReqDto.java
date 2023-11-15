@@ -1,14 +1,12 @@
 package YeoksamStationExit1.locationRecommend.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class FindCenterCoordinatesReqDto {
      double longitude;
      double latitude;

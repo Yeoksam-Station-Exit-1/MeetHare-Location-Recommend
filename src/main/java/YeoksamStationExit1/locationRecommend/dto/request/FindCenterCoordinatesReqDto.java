@@ -11,5 +11,6 @@ public class FindCenterCoordinatesReqDto {
      double longitude;
      double latitude;
      String userId;
+     String stationName;
 }
 

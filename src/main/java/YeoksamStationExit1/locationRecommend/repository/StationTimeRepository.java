@@ -1,5 +1,6 @@
 package YeoksamStationExit1.locationRecommend.repository;
 
+import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.entity.StationTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,5 +19,12 @@ public interface StationTimeRepository extends JpaRepository<StationTime, Intege
     @Modifying
     @Query(value = "UPDATE station_time SET travel_time = ?2, STATUS = 'Y' WHERE station_time_id = ?1", nativeQuery = true)
     int updateStatusStation(int stationId, int travelTime);
+
+    @Query(value = "SELECT s FROM Station s WHERE s.stationName IN (SELECT st.endStation FROM StationTime st " +
+            "WHERE st.startStation = :startStation " +
+            "AND st.status = 'Y'" +
+            "AND st.travelTime < :maxTravelTime " +
+            ") ORDER BY s.infraCount DESC")
+    List<Station> findStationByStationTime(@Param("startStation") String startStation, @Param("maxTravelTime") int maxTravelTime);
 
 }

@@ -10,15 +10,9 @@ import java.util.concurrent.Executors;
 @SpringBootApplication
 public class LocationRecommendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(LocationRecommendApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(LocationRecommendApplication.class, args);
 
-//		ExecutorService executorService = Executors.newFixedThreadPool(
-//				Runtime.getRuntime().availableProcessors()
-//		);
-//
-//		executorService.shutdownNow();
-
-	}
+    }
 
 }

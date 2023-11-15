@@ -40,12 +40,12 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+//        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+        List<Station> stationList = locationService.findCenterCoordinatesV3(req);
         List<RecommentResDto> resList = new ArrayList<>();
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
-            System.out.println("!!!!");
 
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
@@ -56,13 +56,6 @@ public class LocationController {
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> testmoe() {
-        System.out.println("test!!!!");
-        String str = "meethare";
-
-        return new ResponseEntity<>(str, HttpStatus.OK);
-    }
 
     /**
      * 검색어 기반 검색어가 포함된 역 이름을 찾아 좌표값을 반환하는 메서드
@@ -79,7 +72,6 @@ public class LocationController {
      * */
     public ResponseEntity<?> findAvgDistanceByTime() {
         double avgDistance = locationService.findAvgDistanceByTime();
-        System.out.println("avgDistance " + avgDistance);
         locationService.selectAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -95,6 +87,13 @@ public class LocationController {
             System.out.println(station);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/meetingPlace")
+    public ResponseEntity<?> getMeetingPlace(@RequestBody List<FindCenterCoordinatesReqDto> req, Station recommendPlace){
+        List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+        RecommentResDto res = new RecommentResDto(recommendPlace, list);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,14 +40,15 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+//        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+        List<Station> stationList = locationService.findCenterCoordinatesV3(req);
         List<RecommentResDto> resList = new ArrayList<>();
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
-
+            TimeUnit.SECONDS.sleep(1);
         }
         
         return new ResponseEntity<>(resList, HttpStatus.OK);
@@ -91,6 +93,13 @@ public class LocationController {
             System.out.println(station);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/meetingPlace")
+    public ResponseEntity<?> getMeetingPlace(@RequestBody List<FindCenterCoordinatesReqDto> req, Station recommendPlace){
+        List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
+        RecommentResDto res = new RecommentResDto(recommendPlace, list);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
 

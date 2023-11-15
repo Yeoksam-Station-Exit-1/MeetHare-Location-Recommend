@@ -9,6 +9,7 @@ import YeoksamStationExit1.locationRecommend.entity.Station;
 import YeoksamStationExit1.locationRecommend.repository.LocationRepository;
 import YeoksamStationExit1.locationRecommend.dto.response.FindMyStationRespDto;
 import YeoksamStationExit1.locationRecommend.repository.QLocationRepository;
+import YeoksamStationExit1.locationRecommend.repository.StationTimeRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +48,8 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     private final QLocationRepository QLocationRepository;
+
+    private final StationTimeRepository stationTimeRepository;
 
     @Value("${kakao.key}")
     private String kakaokey;
@@ -196,6 +200,7 @@ public class LocationService {
 
             TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
                     response, min);
+
             list.add(tpu);
 
         }
@@ -210,9 +215,7 @@ public class LocationService {
     public List<FindMyStationRespDto> findMyStation(String stationName) {
         List<FindMyStationRespDto> stationList = QLocationRepository.findByStationName(stationName);
         for (FindMyStationRespDto dto : stationList) {
-            System.out.println(dto.getStationName());
-            System.out.println(dto.getLatitude());
-            System.out.println(dto.getLongitude());
+
         }
         return stationList;
     }
@@ -462,6 +465,38 @@ public class LocationService {
     }
     public List<String> findAllStation(){
         return locationRepository.findAllStationName();
+    }
+
+    public List<Station> findCenterCoordinatesV3(List<FindCenterCoordinatesReqDto> req){
+
+        int time = 5;
+        System.out.println("온다!!!!!!");
+        while(true){
+            List<List<Station>> resultList = new ArrayList<>();
+
+            for(FindCenterCoordinatesReqDto rq : req){
+                resultList.add(yourRepositoryMethod(rq, time));
+            }
+            List<Station> commonValues = findCommonValues(resultList);
+            System.out.println(commonValues.toString());
+            if(commonValues.size() >= 3){
+                return commonValues;
+            }
+            time += 5;
+        }
+
+    }
+
+    private List<Station> yourRepositoryMethod(FindCenterCoordinatesReqDto dto, int time) {
+        return stationTimeRepository.findStationByStationTime(dto.getStationName(), time); // 실제 구현에 맞게 수정 필요
+    }
+
+    private List<Station> findCommonValues(List<List<Station>> resultList) {
+        return resultList.stream()
+                .reduce((list1, list2) -> list1.stream()
+                        .filter(list2::contains)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList()); // 리스트가 비어있을 경우 예외 처리 필요
     }
 }
 

@@ -481,5 +481,9 @@ public class LocationService {
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList()); // 리스트가 비어있을 경우 예외 처리 필요
     }
+
+    public Station getStationByNumber(int stationNumber){
+        return locationRepository.findStationByStationId(stationNumber);
+    }
 }
 

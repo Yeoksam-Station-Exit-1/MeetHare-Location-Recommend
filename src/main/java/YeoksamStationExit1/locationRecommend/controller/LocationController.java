@@ -90,7 +90,10 @@ public class LocationController {
     }
 
     @PostMapping("/meetingPlace")
-    public ResponseEntity<?> getMeetingPlace(@RequestBody List<FindCenterCoordinatesReqDto> req, Station recommendPlace){
+    public ResponseEntity<?> getMeetingPlace(@RequestBody List<FindCenterCoordinatesReqDto> req, int stationNumber){
+
+        Station recommendPlace = locationService.getStationByNumber(stationNumber);
+
         List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
         RecommentResDto res = new RecommentResDto(recommendPlace, list);
         return new ResponseEntity<>(res, HttpStatus.OK);

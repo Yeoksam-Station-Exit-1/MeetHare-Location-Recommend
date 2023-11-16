@@ -175,6 +175,12 @@ public class LocationService {
 
             JSONObject jObject = new JSONObject(response);
 
+            System.out.println("********************");
+            System.out.println(jObject.isNull("result"));
+            System.out.println(jObject.isNull("error"));
+
+            if(!jObject.isNull("result")){
+
             JSONObject result = jObject.getJSONObject("result");
             JSONArray path = result.getJSONArray("path");
             int min = Integer.MAX_VALUE;
@@ -196,9 +202,26 @@ public class LocationService {
 
             list.add(tpu);
 
+            }else if(!jObject.isNull("error")){
+
+                JSONObject errorMsg = jObject.getJSONObject("error");
+                if(errorMsg.getString("code").equals("-98")){
+
+                    TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
+                            response, -1, errorMsg.getString("msg"));
+
+                    list.add(tpu);
+
+                }else{
+                    throw new RuntimeException("에러 발생: " + errorMsg.getString("code") + " " + errorMsg.getString("msg"));
+                }
+
+            }
+
         }
 
         return list;
+
 
     }
 

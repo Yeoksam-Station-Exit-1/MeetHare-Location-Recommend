@@ -16,4 +16,5 @@ public class TransPathPerUserDto {
     String transPath;
     int minTime;
     String minPath;
+    String stationName;
 }

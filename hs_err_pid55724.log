@@ -1,0 +1,193 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 67108864 bytes for Failed to commit area from 0x00000000fc000000 to 0x0000000100000000 of length 67108864.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (t:/workspace/open/src/hotspot/os/windows/os_windows.cpp:3269), pid=55724, tid=48580
+#
+# JRE version:  (11.0+28) (build )
+# Java VM: OpenJDK 64-Bit Server VM (11+28, mixed mode, aot, sharing, tiered, compressed oops, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew org.gradle.wrapper.GradleWrapperMain clean
+
+Host: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz, 12 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.3570)
+Time: Mon Nov 13 15:49:42 2023 대한민국 표준시 elapsed time: 0 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000023608e82800):  JavaThread "Unknown thread" [_thread_in_vm, id=48580, stack(0x0000003b71400000,0x0000003b71500000)]
+
+Stack: [0x0000003b71400000,0x0000003b71500000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x63adaa]
+V  [jvm.dll+0x77852f]
+V  [jvm.dll+0x779b18]
+V  [jvm.dll+0x77a1d3]
+V  [jvm.dll+0x2624c8]
+V  [jvm.dll+0x63825a]
+V  [jvm.dll+0x62cb15]
+V  [jvm.dll+0x31563c]
+V  [jvm.dll+0x3154c2]
+V  [jvm.dll+0x31ad36]
+V  [jvm.dll+0x36726f]
+V  [jvm.dll+0x366c90]
+V  [jvm.dll+0x2f2378]
+V  [jvm.dll+0x2f34d6]
+V  [jvm.dll+0x7517d7]
+V  [jvm.dll+0x752f1f]
+V  [jvm.dll+0x374099]
+V  [jvm.dll+0x738059]
+V  [jvm.dll+0x3e35fd]
+V  [jvm.dll+0x3e5961]
+C  [java.exe+0x3603]
+C  [java.exe+0x1746c]
+C  [KERNEL32.DLL+0x17344]
+C  [ntdll.dll+0x526b1]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x000002360749e720, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x0000023608e9c800 GCTaskThread "GC Thread#0" [stack: 0x0000003b71500000,0x0000003b71600000] [id=35248]
+  0x0000023608ea4800 ConcurrentGCThread "G1 Main Marker" [stack: 0x0000003b71600000,0x0000003b71700000] [id=56356]
+  0x0000023608ea6000 ConcurrentGCThread "G1 Conc#0" [stack: 0x0000003b71700000,0x0000003b71800000] [id=51656]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffdb7670d37]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x0000023608e7f760] Heap_lock - owner thread: 0x0000023608e82800
+
+Heap address: 0x00000000fc000000, size: 64 MB, Compressed Oops mode: Non-zero based: 0x00000000fc000000
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff6b1f80000 - 0x00007ff6b1fc5000 	C:\dev\jdk-11\bin\java.exe
+0x00007ffdf8bd0000 - 0x00007ffdf8dc7000 	C:\windows\SYSTEM32\ntdll.dll
+0x00007ffdf8990000 - 0x00007ffdf8a4d000 	C:\windows\System32\KERNEL32.DLL
+0x00007ffdf65f0000 - 0x00007ffdf68e6000 	C:\windows\System32\KERNELBASE.dll
+0x00007ffdf74a0000 - 0x00007ffdf763e000 	C:\windows\System32\USER32.dll
+0x00007ffdf6c00000 - 0x00007ffdf6c22000 	C:\windows\System32\win32u.dll
+0x00007ffdf8390000 - 0x00007ffdf83bc000 	C:\windows\System32\GDI32.dll
+0x00007ffdf64d0000 - 0x00007ffdf65ea000 	C:\windows\System32\gdi32full.dll
+0x00007ffdf63e0000 - 0x00007ffdf647d000 	C:\windows\System32\msvcp_win.dll
+0x00007ffdf62b0000 - 0x00007ffdf63b0000 	C:\windows\System32\ucrtbase.dll
+0x00007ffde8560000 - 0x00007ffde87fa000 	C:\windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.3570_none_60bb2a3971f3e41a\COMCTL32.dll
+0x00007ffdf78f0000 - 0x00007ffdf798e000 	C:\windows\System32\msvcrt.dll
+0x00007ffdf8290000 - 0x00007ffdf82c0000 	C:\windows\System32\IMM32.DLL
+0x00007ffdec680000 - 0x00007ffdec696000 	C:\dev\jdk-11\bin\vcruntime140.dll
+0x00007ffdba350000 - 0x00007ffdba3fa000 	C:\dev\jdk-11\bin\msvcp140.dll
+0x00007ffdb7370000 - 0x00007ffdb7eb1000 	C:\dev\jdk-11\bin\server\jvm.dll
+0x00007ffdf8ae0000 - 0x00007ffdf8b8e000 	C:\windows\System32\ADVAPI32.dll
+0x00007ffdf84e0000 - 0x00007ffdf857c000 	C:\windows\System32\sechost.dll
+0x00007ffdf7100000 - 0x00007ffdf7226000 	C:\windows\System32\RPCRT4.dll
+0x00007ffdf78e0000 - 0x00007ffdf78e8000 	C:\windows\System32\PSAPI.DLL
+0x00007ffdec1d0000 - 0x00007ffdec1da000 	C:\windows\SYSTEM32\VERSION.dll
+0x00007ffdef8b0000 - 0x00007ffdef8b9000 	C:\windows\SYSTEM32\WSOCK32.dll
+0x00007ffdea480000 - 0x00007ffdea4a7000 	C:\windows\SYSTEM32\WINMM.dll
+0x00007ffdf76c0000 - 0x00007ffdf772b000 	C:\windows\System32\WS2_32.dll
+0x00007ffdf4aa0000 - 0x00007ffdf4ab2000 	C:\windows\SYSTEM32\kernel.appcore.dll
+0x00007ffdebce0000 - 0x00007ffdebcf1000 	C:\dev\jdk-11\bin\verify.dll
+0x00007ffdf47c0000 - 0x00007ffdf49a4000 	C:\windows\SYSTEM32\DBGHELP.DLL
+0x00007ffdda190000 - 0x00007ffdda1c4000 	C:\windows\SYSTEM32\dbgcore.DLL
+0x00007ffdf68f0000 - 0x00007ffdf6972000 	C:\windows\System32\bcryptPrimitives.dll
+0x00007ffde4840000 - 0x00007ffde4868000 	C:\dev\jdk-11\bin\java.dll
+0x00007ffdea5d0000 - 0x00007ffdea5e6000 	C:\dev\jdk-11\bin\zip.dll
+0x00007ffdeeb50000 - 0x00007ffdeeb5a000 	C:\dev\jdk-11\bin\jimage.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\dev\jdk-11\bin;C:\windows\SYSTEM32;C:\windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.3570_none_60bb2a3971f3e41a;C:\dev\jdk-11\bin\server
+
+VM Arguments:
+jvm_args: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew 
+java_command: org.gradle.wrapper.GradleWrapperMain clean
+java_class_path (initial): C:\MEETHARE\MeetHare-Location-Recommend\\gradle\wrapper\gradle-wrapper.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 3                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 10                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 67108864                                  {product} {command line}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 67108864                                  {product} {command line}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5835340                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122911450                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122911450                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+     bool UseCompressedClassPointers               = true                                 {lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                                 {lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\dev\jdk-11
+CLASSPATH=C:\MEETHARE\MeetHare-Location-Recommend\\gradle\wrapper\gradle-wrapper.jar
+PATH=C:\dev\jdk-11\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\libnvvp;C:\Python37\Scripts\;C:\Python37\;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Bandizip\;C:\Program Files\Git LFS;C:\ProgramData\chocolatey\bin;C:\ProgramData\chocolatey\lib\cunit\lib;C:\ProgramData\chocolatey\lib\tinyxml2\lib;C:\ProgramData\chocolatey\lib\log4cxx\lib;C:\ProgramData\chocolatey\lib\bullet\lib;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\nodejs\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\SSAFY\AppData\Local\Microsoft\WindowsApps;C:\Users\SSAFY\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2023.1.3\bin;C:\Users\SSAFY\AppData\Local\JetBrains\Toolbox\scripts;C:\OpenSSL-Win64\bin\;C:\Program Files\CMake\bin;C:\Users\SSAFY\Desktop\protoc-3.2.0-win32\bin;C:\Users\SSAFY\Desktop\models;C:\Users\SSAFY\Desktop\models\research;C:\Users\SSAFY\Desktop\models\research\slim;C:\Users\SSAFY\Desktop\models\research\object_detection;C:\Users\SSAFY\AppData\Roaming\npm
+USERNAME=SSAFY
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10 , 64 bit Build 19041 (10.0.19041.3570)
+
+CPU:total 12 (initial active 12) (6 cores per cpu, 2 threads per core) family 6 model 165 stepping 2, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, 3dnowpref, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2, adx, fma
+
+Memory: 4k page, system-wide physical 16304M (2199M free)
+TotalPageFile size 22172M (AvailPageFile size 5M)
+current process WorkingSet (physical memory assigned to process): 10M, peak: 10M
+current process commit charge ("private bytes"): 63M, peak: 127M
+
+vm_info: OpenJDK 64-Bit Server VM (11+28) for windows-amd64 JRE (11+28), built on Aug 23 2018 03:04:58 by "mach5one" with MS VC++ 15.5 (VS2017)
+
+END.

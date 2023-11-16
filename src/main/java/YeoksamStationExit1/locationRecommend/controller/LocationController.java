@@ -4,6 +4,7 @@ import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
 import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
+import YeoksamStationExit1.locationRecommend.dto.request.MeetingPlaceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
@@ -41,12 +42,12 @@ public class LocationController {
             throws Exception {
         Set<String> placeNames = locationService.findCenterCoordinates(req);
 
-        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+//        List<Station> stationList = locationService.findPlaceByInfracount(placeNames);
+        List<Station> stationList = locationService.findCenterCoordinatesV3(req);
         List<RecommentResDto> resList = new ArrayList<>();
         for(Station recommendPlace : stationList){
 
             List<TransPathPerUserDto> list = locationService.searchPubTransPath(req, recommendPlace);
-            System.out.println("!!!!");
 
             RecommentResDto res = new RecommentResDto(recommendPlace, list);
             resList.add(res);
@@ -57,13 +58,6 @@ public class LocationController {
         return new ResponseEntity<>(resList, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> testmoe() {
-        System.out.println("test!!!!");
-        String str = "meethare";
-
-        return new ResponseEntity<>(str, HttpStatus.OK);
-    }
 
     /**
      * 검색어 기반 검색어가 포함된 역 이름을 찾아 좌표값을 반환하는 메서드
@@ -80,7 +74,6 @@ public class LocationController {
      * */
     public ResponseEntity<?> findAvgDistanceByTime() {
         double avgDistance = locationService.findAvgDistanceByTime();
-        System.out.println("avgDistance " + avgDistance);
         locationService.selectAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -98,10 +91,21 @@ public class LocationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
     @GetMapping("/getStationInfo")
     public ResponseEntity<?> findStationById(@RequestParam("fixStation") int stationId) {
         List<GetStationCoordinateResDto> dto = locationService.getStationPosition(stationId);
-        return new ResponseEntity<>( dto, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping("/meetingPlace")
+    public ResponseEntity<?> getMeetingPlace(@RequestBody MeetingPlaceReqDto mpDto){
+        Station recommendPlace = locationService.getStationByNumber(mpDto.getStationNumber());
+
+        List<TransPathPerUserDto> list = locationService.searchPubTransPath(mpDto.getLocations(), recommendPlace);
+        RecommentResDto res = new RecommentResDto(recommendPlace, list);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+
     }
 
 

@@ -3,6 +3,7 @@ package YeoksamStationExit1.locationRecommend.controller;
 import YeoksamStationExit1.locationRecommend.dto.request.FindAvgDistanceReqDto;
 import YeoksamStationExit1.locationRecommend.dto.request.FindCenterCoordinatesReqDto;
 
+import YeoksamStationExit1.locationRecommend.dto.response.GetStationCoordinateResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.RecommentResDto;
 import YeoksamStationExit1.locationRecommend.dto.response.TransPathPerUserDto;
 import YeoksamStationExit1.locationRecommend.entity.Station;
@@ -95,6 +96,12 @@ public class LocationController {
             System.out.println(station);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/getStationInfo")
+    public ResponseEntity<?> findStationById(@RequestParam("fixStation") int stationId) {
+        List<GetStationCoordinateResDto> dto = locationService.getStationPosition(stationId);
+        return new ResponseEntity<>( dto, HttpStatus.OK);
     }
 
 

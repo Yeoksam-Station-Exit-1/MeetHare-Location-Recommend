@@ -20,7 +20,7 @@ public class RealTimeController {
         /pub/hello              - 메시지 발행
     */
 
-    @MessageMapping("/hello")
+    @MessageMapping("/connect")
     public void message(Message message) {
         log.info("message.getChannelId : "+ message.getChannelId());
         log.info("message.getSender : "+ message.getSender());

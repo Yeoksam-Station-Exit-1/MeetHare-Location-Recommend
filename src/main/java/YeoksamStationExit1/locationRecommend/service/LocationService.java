@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
@@ -148,9 +149,9 @@ public class LocationService {
 
         // 인프라 순으로 가져오기
         List<Station> list = locationRepository.findByInfraCount(placeNames);
-        if(list.size() <= 3){
+        if (list.size() <= 3) {
             return list;
-        }else{
+        } else {
             List<Station> stationList = new ArrayList<>(list.subList(0, 3));
             return stationList;
         }
@@ -197,13 +198,13 @@ public class LocationService {
             JSONArray path = result.getJSONArray("path");
             int min = Integer.MAX_VALUE;
             JSONArray minArr = new JSONArray();
-            for(int i = 0; i < path.length(); i++){
+            for (int i = 0; i < path.length(); i++) {
                 System.out.println();
                 int temp = path.getJSONObject(i).getJSONObject("info").getInt("totalTime");
                 JSONArray arr = path.getJSONObject(i).getJSONArray("subPath");
 //                System.out.println(arr.toString());
 //                System.out.println("************");
-                if(temp < min){
+                if (temp < min) {
                     min = temp;
                     minArr = arr;
                 }
@@ -476,8 +477,23 @@ public class LocationService {
 
         return findNearbyAreas(centerCoordinates);
     }
-    public List<String> findAllStation(){
+
+    public List<String> findAllStation() {
         return locationRepository.findAllStationName();
+    }
+
+
+    /**
+     * 역아이디(pk)을 기준으로 좌표를 검색하는 메서드
+     */
+    public List<GetStationCoordinateResDto> getStationPosition(int stationId) {
+        List<GetStationCoordinateResDto> station = QLocationRepository.getStationPosition(stationId);
+        for(GetStationCoordinateResDto dto : station ){
+            System.out.println(dto.getStationId());
+            System.out.println(dto.getLatitude());
+            System.out.println(dto.getLongitude());
+        }
+        return station;
     }
 }
 

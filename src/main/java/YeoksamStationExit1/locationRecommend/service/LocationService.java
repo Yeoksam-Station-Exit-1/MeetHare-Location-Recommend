@@ -210,6 +210,8 @@ public class LocationService {
                     TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
                             response, -1, errorMsg.getString("msg"));
 
+                    list.add(tpu);
+
                 }else{
                     throw new RuntimeException("에러 발생: " + errorMsg.getString("code") + " " + errorMsg.getString("msg"));
                 }

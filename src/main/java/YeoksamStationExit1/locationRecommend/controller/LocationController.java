@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "https://meethare.site")
+@CrossOrigin(origins = "https://meethare.site", allowedHeaders = "*")
 @RequestMapping("/map")
 @Slf4j
 @RequiredArgsConstructor

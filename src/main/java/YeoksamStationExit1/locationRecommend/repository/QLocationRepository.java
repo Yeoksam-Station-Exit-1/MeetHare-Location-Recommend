@@ -14,4 +14,6 @@ public interface QLocationRepository {
     void updateDistanceColumn(int stationDistanceId, double distance);
 
     GetAvgDistanceRespDto findByStationId(int stationId);
+
+    List<GetStationCoordinateResDto> getStationPosition(int stationId);
 }

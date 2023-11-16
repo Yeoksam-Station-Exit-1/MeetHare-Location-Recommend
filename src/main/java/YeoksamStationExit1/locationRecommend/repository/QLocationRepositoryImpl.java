@@ -91,5 +91,17 @@ public class QLocationRepositoryImpl implements QLocationRepository {
                 .fetchOne();
     }
 
+    @Override
+    public List<GetStationCoordinateResDto> getStationPosition(int stationId) {
+        return queryFactory
+                .select(Projections.constructor(GetStationCoordinateResDto.class,
+                        station.stationId.as("stationId"),
+                        station.longitude.as("longitude"),
+                        station.latitude.as("latitude")))
+                .from(station)
+                .where(station.stationId.eq(stationId))
+                .fetch();
+    }
+
 
 }

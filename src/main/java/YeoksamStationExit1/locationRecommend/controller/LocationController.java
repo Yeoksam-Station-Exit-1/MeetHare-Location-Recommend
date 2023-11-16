@@ -92,7 +92,6 @@ public class LocationController {
 
     @PostMapping("/meetingPlace")
     public ResponseEntity<?> getMeetingPlace(@RequestBody MeetingPlaceReqDto mpDto){
-        System.out.println(12341234);
         Station recommendPlace = locationService.getStationByNumber(mpDto.getStationNumber());
 
         List<TransPathPerUserDto> list = locationService.searchPubTransPath(mpDto.getLocations(), recommendPlace);

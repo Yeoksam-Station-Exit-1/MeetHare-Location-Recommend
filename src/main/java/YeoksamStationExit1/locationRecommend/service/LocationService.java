@@ -175,10 +175,6 @@ public class LocationService {
 
             JSONObject jObject = new JSONObject(response);
 
-            System.out.println("********************");
-            System.out.println(jObject.isNull("result"));
-            System.out.println(jObject.isNull("error"));
-
             if(!jObject.isNull("result")){
 
             JSONObject result = jObject.getJSONObject("result");
@@ -198,7 +194,7 @@ public class LocationService {
             }
 
             TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
-                    response, min, minArr.toString());
+                    response, min, minArr.toString(), rq.getStationName());
 
             list.add(tpu);
 
@@ -208,7 +204,7 @@ public class LocationService {
                 if(errorMsg.getString("code").equals("-98")){
 
                     TransPathPerUserDto tpu = new TransPathPerUserDto(rq.getUserId(), rq.getLongitude(), rq.getLatitude(),
-                            response, -1, errorMsg.getString("msg"));
+                            response, -1, errorMsg.getString("msg"), rq.getStationName());
 
                     list.add(tpu);
 

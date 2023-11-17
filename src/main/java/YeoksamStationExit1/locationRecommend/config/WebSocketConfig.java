@@ -27,7 +27,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry
                 .addEndpoint("/ws")
-                .setAllowedOrigins("wss://meethare.site");
+                .setAllowedOrigins("wss://meethare.site","ws://meethare.site","https://meethare.site","http://meethare.site","wss://localhost:3000","ws://localhost:3000","https://localhost:3000","http://localhost:3000");
+//                .setAllowedOrigins("wss://meethare.site");
     }
 
 

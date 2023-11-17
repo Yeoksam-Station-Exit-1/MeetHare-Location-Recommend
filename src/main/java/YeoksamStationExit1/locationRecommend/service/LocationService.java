@@ -478,7 +478,7 @@ public class LocationService {
     /**
      * 역아이디(pk)을 기준으로 좌표를 검색하는 메서드
      */
-    public List<GetStationCoordinateResDto> getStationPosition(int stationId){
+    public List<GetStationCoordinateResDto> findStationPosition(int stationId){
                 List<GetStationCoordinateResDto> station = QLocationRepository.getStationPosition(stationId);
                 for (GetStationCoordinateResDto dto : station) {
                     System.out.println(dto.getStationId());

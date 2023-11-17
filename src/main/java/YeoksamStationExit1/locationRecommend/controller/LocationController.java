@@ -29,7 +29,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "https://meethare.site", allowedHeaders = "*")
+@CrossOrigin(origins = {"https://meethare.site", "http://localhost:3000", "wss://meethare.site"}, allowedHeaders = "*")
+//@CrossOrigin("*")
 @RequestMapping("/map")
 @Slf4j
 @RequiredArgsConstructor
@@ -94,7 +95,7 @@ public class LocationController {
 
     @GetMapping("/getStationInfo")
     public ResponseEntity<?> findStationById(@RequestParam("fixStation") int stationId) {
-        List<GetStationCoordinateResDto> dto = locationService.getStationPosition(stationId);
+        List<GetStationCoordinateResDto> dto = locationService.findStationPosition(stationId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
